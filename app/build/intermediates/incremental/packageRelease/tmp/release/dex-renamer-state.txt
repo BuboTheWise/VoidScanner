@@ -1,4 +1,0 @@
-#Tue May 05 04:18:48 PDT 2026
-base.0=/home/bubo/.hermes/workspace/Code/VeilScanner/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
