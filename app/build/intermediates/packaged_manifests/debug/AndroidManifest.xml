@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bubo.veilscanner"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0.0" >
 
     <uses-sdk
         android:minSdkVersion="29"
@@ -42,7 +42,9 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VeilScanner" >
+        android:theme="@style/Theme.VeilScanner"
+        android:versionCode="1"
+        android:versionName="1.0.0" >
         <activity
             android:name="com.bubo.veilscanner.MainActivity"
             android:exported="true"

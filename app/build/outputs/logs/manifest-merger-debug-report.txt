@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-48:12
-INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-48:12
-INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-48:12
-INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-48:12
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-50:12
+INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-50:12
+INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-50:12
+INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:2:1-50:12
 MERGED from [com.google.android.material:material:1.11.0] /home/bubo/.gradle/caches/transforms-3/c6240bf1ed6d5526cf1349b6dab7468e/transformed/material-1.11.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/bubo/.gradle/caches/transforms-3/c2cd2a87133d21a30be53f17c1f45f01/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/bubo/.gradle/caches/transforms-3/706aad7209b264624594ddf595ce5e6b/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
@@ -94,8 +94,8 @@ ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidMan
 	android:name
 		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:20:22-76
 application
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:22:5-46:19
-INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:22:5-46:19
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:22:5-48:19
+INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:22:5-48:19
 MERGED from [com.google.android.material:material:1.11.0] /home/bubo/.gradle/caches/transforms-3/c6240bf1ed6d5526cf1349b6dab7468e/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] /home/bubo/.gradle/caches/transforms-3/c6240bf1ed6d5526cf1349b6dab7468e/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/bubo/.gradle/caches/transforms-3/c2cd2a87133d21a30be53f17c1f45f01/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -122,6 +122,10 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/bubo/.gradle/caches/t
 		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:27:9-35
 	android:label
 		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:25:9-41
+	android:versionName
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:31:9-36
+	android:versionCode
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:30:9-32
 	android:roundIcon
 		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:26:9-48
 	android:icon
@@ -131,31 +135,31 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/bubo/.gradle/caches/t
 	android:theme
 		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:28:9-49
 activity#com.bubo.veilscanner.MainActivity
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:31:9-39:20
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:33:9-41:20
 	android:exported
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:33:13-36
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:35:13-36
 	android:theme
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:34:13-53
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:36:13-53
 	android:name
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:32:13-41
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:34:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:35:13-38:29
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:37:13-40:29
 action#android.intent.action.MAIN
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:36:17-69
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:38:17-69
 	android:name
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:36:25-66
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:38:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:37:17-77
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:39:17-77
 	android:name
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:37:27-74
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:39:27-74
 activity#com.bubo.veilscanner.ExportActivity
-ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:41:9-44:56
+ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:43:9-46:56
 	android:exported
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:43:13-37
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:45:13-37
 	android:theme
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:44:13-53
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:46:13-53
 	android:name
-		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:42:13-43
+		ADDED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml:44:13-43
 uses-sdk
 INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/bubo/.hermes/workspace/Code/VeilScanner/app/src/main/AndroidManifest.xml
