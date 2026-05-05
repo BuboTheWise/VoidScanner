@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Location permissions -->
+    <!-- Location permissions (required for WiFi, Bluetooth, and location services) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- WiFi permissions (Android 9 and below) -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
     <!-- WiFi permissions (Android 10+) -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION_UPDATE" />
 
-    <!-- Bluetooth permissions -->
+    <!-- Bluetooth permissions (legacy) -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- Bluetooth permissions (Android 12+) -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <!-- Sensor permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -27,9 +34,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VeilScanner"
         android:requestLegacyExternalStorage="true"
-        android:versionCode="1"
-        android:versionName="1.0.0">
+        android:versionCode="2"
+        android:versionName="1.0.1">
 
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -40,6 +48,7 @@
             </intent-filter>
         </activity>
 
+        <!-- Export Activity -->
         <activity
             android:name=".ExportActivity"
             android:exported="false"
