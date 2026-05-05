@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VeilScanner</string>
+    <string name="start_scan">Start Scan</string>
+    <string name="stop_scan">Stop Scan</string>
+    <string name="export_data">Export Data</string>
+    <string name="collected_data">Collected Data</string>
+    <string name="scan_results">Scan Results</string>
+    <string name="sensor_data">Sensor Data</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="show_raw_values">Show Raw Values (Debug Mode)</string>
+    <string name="status">Status</string>
+    <string name="scanning">Scanning...</string>
+    <string name="data_exported">Data exported successfully</string>
+    <string name="error_exporting">Error exporting data</string>
+    <string name="scan_complete">Scan complete</string>
+    <string name="collecting_wifi">Collecting WiFi data...</string>
+    <string name="collecting_bluetooth">Collecting Bluetooth data...</string>
+    <string name="collecting_location">Collecting location data...</string>
+    <string name="collecting_sensors">Collecting sensor data...</string>
+</resources>
