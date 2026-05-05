@@ -8,12 +8,21 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="VeilScanner v1.0.0"
+        android:text="VeilScanner v1.0.1"
         android:textSize="12sp"
         android:textStyle="bold"
         android:textColor="#757575"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/status"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
         android:gravity="center" />
 
     <TextView
@@ -47,7 +56,8 @@
             android:layout_height="wrap_content"
             android:text="Results will appear here"
             android:textSize="12sp"
-            android:fontFamily="monospace" />
+            android:fontFamily="monospace"
+            android:scrollbars="vertical" />
     </ScrollView>
 
     <LinearLayout
