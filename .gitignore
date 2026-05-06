@@ -1,0 +1,14 @@
+# Gradle
+.gradle/
+build/
+
+# APK
+*.apk
+*.ap_
+
+# Local configuration file
+local.properties
+
+# OS-specific files
+.DS_Store
+Thumbs.db
