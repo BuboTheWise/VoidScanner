@@ -1,4 +1,4 @@
-package com.bubo.veilscanner;
+package com.bubo.voidscanner;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -27,7 +27,7 @@ public class MainActivityInstrumentedTest {
     @Test
     public void appCompatActivityThemeUsed() {
         ActivityScenario.launch(MainActivity.class);
-        // Theme should be applied via @style/Theme.VeilScanner
+        // Theme should be applied via @style/Theme.VoidScanner
         assertTrue("Theme should be applied", true);
     }
 }

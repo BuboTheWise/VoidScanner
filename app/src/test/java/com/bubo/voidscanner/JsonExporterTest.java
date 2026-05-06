@@ -1,6 +1,6 @@
-package com.bubo.veilscanner;
+package com.bubo.voidscanner;
 
-import com.bubo.veilscanner.JsonExporter;
+import com.bubo.voidscanner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
