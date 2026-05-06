@@ -1,4 +1,0 @@
-#Wed May 06 04:27:08 PDT 2026
-base.0=/home/bubo/.hermes/workspace/Code/VoidScanner/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
