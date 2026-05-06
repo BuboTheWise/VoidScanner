@@ -1,4 +1,4 @@
-package com.bubo.veilscanner;
+package com.bubo.voidscanner;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;

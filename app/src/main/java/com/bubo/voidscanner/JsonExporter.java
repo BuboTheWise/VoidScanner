@@ -1,4 +1,4 @@
-package com.bubo.veilscanner;
+package com.bubo.voidscanner;
 
 import android.content.Context;
 import android.os.Environment;
