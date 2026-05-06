@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace "com.bubo.veilscanner"
+    namespace "com.bubo.voidscanner"
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.bubo.veilscanner"
+        applicationId "com.bubo.voidscanner"
         minSdk 26
         targetSdk 34
         versionCode 3
