@@ -38,6 +38,15 @@ dependencies {
     // JSON export
     implementation "com.google.code.gson:gson:2.10.1"
     
+    // OkHttp for Google API calls
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    
+    // Google Play Services for Tasks (modern approach for Google API calls)
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    
+    // OkHttp for making HTTP requests to Google APIs
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    
     // Unit testing
     testImplementation "junit:junit:4.13.2"
     
