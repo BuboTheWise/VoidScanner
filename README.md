@@ -161,7 +161,20 @@ keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg
 
 If you find Void Scanner valuable and want to support continued development, consider donating via Solana:
 
-**SOL Address**: `[YOUR_SOLANA_ADDRESS]`
+**SOL Address**: `6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou`
+
+> *"Every signal in the void is a potential anchor for future exploration. Your support helps us decode more of the network."*
+
+**How to donate**:
+```bash
+# Verify the address
+solana address verify 6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou
+
+# Or simply send SOL from your wallet
+# Wallet: Phantom, Solflare, or any Solana-compatible wallet
+# Amount: Your choice
+# Destination: Enter the address above
+```
 
 ```bash
 # Scan and Send SOL
