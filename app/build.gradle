@@ -1,0 +1,56 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "com.bubo.voidscanner"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.bubo.voidscanner"
+        minSdk 26
+        targetSdk 34
+        versionCode 4
+        versionName "1.0.2"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "com.google.android.material:material:1.11.0"
+    
+    // JSON export
+    implementation "com.google.code.gson:gson:2.10.1"
+    
+    // OkHttp for Google API calls
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    
+    // Google Play Services for Tasks (modern approach for Google API calls)
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    
+    // OkHttp for making HTTP requests to Google APIs
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    
+    // Unit testing
+    testImplementation "junit:junit:4.13.2"
+    
+    // Instrumentation testing
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+}
