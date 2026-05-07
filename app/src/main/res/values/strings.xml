@@ -4,6 +4,7 @@
     <string name="start_scan">Start Scan</string>
     <string name="stop_scan">Stop Scan</string>
     <string name="export_data">Export Data</string>
+    <string name="export_to_sheets">Export to Google Sheets</string>
     <string name="collected_data">Collected Data</string>
     <string name="scan_results">Scan Results</string>
     <string name="sensor_data">Sensor Data</string>
