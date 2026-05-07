@@ -35,9 +35,9 @@ public class JsonExporter {
             // Add timestamp
             Map<String, Object> metadata = new HashMap<>();
             metadata.put("created_at", dateFormat.format(new Date()));
-            metadata.put("device_model", "Pixel 5");
+            metadata.put("device_model", "VoidScanner");
             metadata.put("android_version", "14 (API 34)");
-            metadata.put("app_version", "1.0");
+            metadata.put("app_version", "1.0.2");
             metadata.put("debug_mode", debugMode);
             root.put("metadata", metadata);
 
@@ -57,9 +57,9 @@ public class JsonExporter {
             scans.put("location_scans", 0);
             root.put("scans", scans);
 
-            // Write to storage
+            // Write to Downloads folder
             File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOCUMENTS), "VeilScanner");
+                    Environment.DIRECTORY_DOWNLOADS), "VoidScanner");
             if (!storageDir.exists() && !storageDir.mkdirs()) {
                 return false;
             }
