@@ -11,10 +11,9 @@ Void Scanner is an isolated Android application that exhaustively collects WiFi 
 ### Integration Context
 
 Void Scanner serves as the **Void Resonator** component in the Nethervoid Network. The scanner:
-1. Emits **deterministic seeds** from sensor data to generate game entities
-2. Generates **signed scan records** for cryptographic authenticity
-3. Provides real-time feedback and post-scan summarization for the Nethervoid game layer
-4. Operates independently as a test platform, then integrates into the full Nethervoid application
+1. Emits **deterministic seeds** from sensor data to generate game entities (planned)
+2. Provides real-time feedback and post-scan summarization for the Nethervoid game layer
+3. Operates independently as a test platform, then integrates into the full Nethervoid application
 
 ## Features
 
@@ -31,7 +30,7 @@ Void Scanner serves as the **Void Resonator** component in the Nethervoid Networ
 
 ### Design Philosophy
 - **Offline-First**: Works without network, entirely local to device
-- **Deterministic Generation**: Sensor fingerprints drive procedural content
+- **Deterministic Generation**: Sensor fingerprints drive procedural content (planned)
 - **Sensor-Mesh Architecture**: Every signal is a possible entity or anchor in the void
 - **Test-Isolated**: Separated package structure enables independent development and iteration
 
@@ -48,8 +47,8 @@ com.bubo.voidscanner/
 ```
 
 ### Versioning
-- **Current Version**: v1.0.0 (initial release)
-- **Version Code**: 1 (incremental for Play Store/F-Droid)
+- **Current Version**: v1.0.2
+- **Version Code**: 4
 - **Target API**: Android 10+ (API 29+)
 - **Package Name**: `com.bubo.voidscanner`
 
@@ -127,8 +126,8 @@ keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg
 
 ### F-Droid Metadata
 
-**Name**: Void Scanner  
-**Summary**: Sensor data collection for Nethervoid Network void resonance analysis  
+**Name**: Void Scanner
+**Summary**: Sensor data collection for Nethervoid Network void resonance analysis
 **Description**: |
 >
 > The core scanner for the Nethervoid Network — explore the void between networked devices through comprehensive sensor analysis. Collects WiFi and Bluetooth signatures offline-first, generating deterministic seeds for game entity generation.
@@ -149,13 +148,31 @@ keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg
 >
 > **Issue Tracker**: https://github.com/BuboTheWise/VoidScanner/issues
 
-**Categories**: Tools, System, Security  
-**License**: Apache-2.0  
-**Scan Info**: Requested scan for: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml  
-**AutoUpdateMode: None**  
-**UpdateCheckMode: None**  
-**UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\d\.]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
+**Categories**: Tools, System, Security
+**License**: Apache-2.0
+**Scan Info**: Requested scan for: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
+**AutoUpdateMode: None**
+**UpdateCheckMode: None**
+**UpdateCheckData**: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\d\.]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
 
+---
+
+## Funding
+
+If you find Void Scanner valuable and want to support continued development, consider donating via Solana:
+
+**SOL Address**: `[YOUR_SOLANA_ADDRESS]`
+
+```bash
+# Scan and Send SOL
+solana airdrop 1 <YOUR_SOLANA_ADDRESS>
+
+# Manual transfer
+# Wallet: Phantom, Solflare, etc.
+# Address: [YOUR_SOLANA_ADDRESS]
+```
+
+> *"Every signal in the void is a potential anchor for future exploration. Your support helps us decode more of the network."*
 
 ---
 
@@ -189,10 +206,10 @@ keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg
 
 ## Project Context
 
-**Based On**: Veil Scanner / Sideband exploration  
-**Project**: Nethervoid Network (version 0.2)  
-**Author**: BuboTheWise  
-**License**: Apache 2.0  
+**Based On**: Veil Scanner / Sideband exploration
+**Project**: Nethervoid Network (version 0.2)
+**Author**: BuboTheWise
+**License**: Apache 2.0
 
 ### Related Projects
 
@@ -212,5 +229,5 @@ Void Scanner is being developed as an **isolated test platform** before merging 
 
 ## License
 
-Apache License 2.0  
+Apache License 2.0
 See [LICENSE](LICENSE) file for details.
