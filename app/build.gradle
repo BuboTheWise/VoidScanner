@@ -6,17 +6,19 @@ android {
     namespace "com.bubo.voidscanner"
     compileSdk 34
 
-    defaultConfig {
-        applicationId "com.bubo.voidscanner"
-        minSdk 26
-        targetSdk 34
-        versionCode 4
-        versionName "1.0.2"
+    signingConfigs {
+        release {
+            storeFile file("voidscanner.keystore")
+            storePassword "void123"
+            keyAlias "voidscanner"
+            keyPassword "void123"
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
         }
     }
 
@@ -28,6 +30,35 @@ android {
     buildFeatures {
         buildConfig = true
     }
+
+    defaultConfig {
+        applicationId "com.bubo.voidscanner"
+        minSdk 26
+        targetSdk 34
+
+        // Version from gradle.properties
+        versionName "${getProperty('APP_VERSION_MAJOR')}.${getProperty('APP_VERSION_MINOR')}.${getProperty('APP_VERSION_PATCH')}"
+
+        // Semantic version code calculation: (MAJOR * 10000) + (MINOR * 100) + PATCH
+        // Ensures ordering and compatibility with Google Play
+        versionCode calculateSemanticVersionCode()
+
+        // BuildConfig version fields for compile-time access
+        buildConfigField "int", "VERSION_MAJOR", "${APP_VERSION_MAJOR}"
+        buildConfigField "int", "VERSION_MINOR", "${APP_VERSION_MINOR}"
+        buildConfigField "int", "VERSION_PATCH", "${APP_VERSION_PATCH}"
+    }
+}
+
+// Calculate semantic version code for Google Play compatibility
+// Format: (MAJOR * 10000) + (MINOR * 100) + PATCH
+// Example: 1.01.00 → 10100, 1.02.05 → 10205, 2.00.99 → 20099
+def calculateSemanticVersionCode() {
+    def major = getProperty('APP_VERSION_MAJOR').toInteger()
+    def minor = getProperty('APP_VERSION_MINOR').toInteger()
+    def patch = getProperty('APP_VERSION_PATCH').toInteger()
+
+    return (major * 10000) + (minor * 100) + patch
 }
 
 dependencies {
