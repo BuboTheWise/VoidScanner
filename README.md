@@ -102,11 +102,31 @@ APP_VERSION_PATCH=00
 - **OkHttp**: Placeholder for future APIs (not yet integrated)
 - **Google Play Services**: Planned for Sheets integration (future)
 
-### Storage
-- **Exports**: `/sdcard/Downloads/VoidScanner/*.json`
-- **No Local Database**: Data only written to JSON exports
-- **No Persistent Storage**: Scans are ephemeral, exported only
+## Developer Contact
 
+For questions, issues, or collaboration opportunities:
+
+### Communication Channels
+- **GitHub Repository**: [https://github.com/BuboTheWise/VoidScanner](https://github.com/BuboTheWise/VoidScanner)
+- **Issue Tracker**: [https://github.com/BuboTheWise/VoidScanner/issues](https://github.com/BuboTheWise/VoidScanner/issues)
+- **Author**: @BuboTheWise (BuboTheWise)
+
+### Reporting Issues
+When reporting issues, please include:
+- Device model and Android version
+- Void Scanner version (from About screen)
+- Reproduction steps
+- Any error messages or crash logs
+- Android logcat output (if applicable)
+
+### Collaboration
+For general discussions, pull requests, or collaboration inquiries:
+- Open an issue on GitHub
+- Fork the repository and submit a pull request
+- Review the [F-Droid Compatibility](#fdroid-compatibility) section for additional guidelines
+
+### F-Droid Availability
+Void Scanner is published on F-Droid for privacy-focused users. See [F-Droid Compatibility](#fdroid-compatibility) for download links and metadata.
 ## Building from Source
 
 ### Requirements
@@ -288,24 +308,6 @@ Void Scanner is being developed as an **isolated test platform** before merging 
 2. Establish deterministic generation logic
 3. Build scan record cryptographic signatures
 4. Integrate into Nethervoid game layer as Void Resonator
-
-## Developer Contact
-
-For questions, bug reports, or feature requests, please use the project's issue tracker:
-
-- **GitHub Repository**: [https://github.com/BuboTheWise/VoidScanner](https://github.com/BuboTheWise/VoidScanner)
-- **Issue Tracker**: [https://github.com/BuboTheWise/VoidScanner/issues](https://github.com/BuboTheWise/VoidScanner/issues)
-
-When reporting issues, please include:
-- Device model and Android version
-- Void Scanner version (from About screen)
-- Reproduction steps
-- Any error messages or crash logs
-- Android logcat output (if applicable)
-
-For general discussions, pull requests, or collaboration inquiries, feel free to open an issue or fork the repository and submit a pull request.
-
----
 
 ## License
 
