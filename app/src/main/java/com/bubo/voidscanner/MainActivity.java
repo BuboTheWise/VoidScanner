@@ -300,13 +300,13 @@ public class MainActivity extends AppCompatActivity {
     private void exportData() {
         try {
             JsonExporter exporter = new JsonExporter(this);
-            String filename = "veilscan_" + System.currentTimeMillis() + ".json";
+            String filename = "voidscanner_" + System.currentTimeMillis() + ".json";
             boolean exported = exporter.exportData(collectedData, filename, false);
 
             if (exported) {
                 runOnUiThread(() -> {
                     statusTextView.setText("Data exported");
-                    Toast.makeText(this, "Exported to " + getFilesDir() + "/" + filename,
+                    Toast.makeText(this, "Exported to /sdcard/Downloads/VoidScanner/" + filename,
                             Toast.LENGTH_LONG).show();
                 });
             } else {

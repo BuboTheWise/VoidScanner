@@ -1,0 +1,11 @@
+# .gitignore for fdroid/repo
+.gradle
+local.properties
+*.iml
+.gradle
+.cxx
+.idea/
+.DS_Store
+*.apk
+*.keystore
+*.log
