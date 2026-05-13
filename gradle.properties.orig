@@ -1,0 +1,18 @@
+# Project-wide Gradle settings.
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.enableJetifier=true
+kapt.use.worker.api=true
+kapt.incremental.apt=false
+org.gradle.parallel=true
+
+# Version Configuration for Semantic Versioning
+# Format: X.Y.ZZ (ONE digit for X, ONE digit for Y, TWO digits for Z)
+# Examples of valid versions: 1.1.03, 1.1.02, 1.2.00, 1.99.99
+# NEVER reuse versions - each build gets unique version
+APP_VERSION_MAJOR=1
+APP_VERSION_MINOR=1
+APP_VERSION_PATCH=03
+
+# Build variant configuration
+APP_BUILD_TYPE=debug

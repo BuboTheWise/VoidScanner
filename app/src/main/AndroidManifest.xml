@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <application
@@ -35,8 +37,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VoidScanner"
         android:requestLegacyExternalStorage="true"
-        android:versionCode="4"
-        android:versionName="1.0.2">
+        android:versionCode="@integer/version_code"
+        android:versionName="@string/version_name">
 
         <!-- Main Activity -->
         <activity

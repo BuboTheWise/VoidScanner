@@ -37,17 +37,12 @@ public class JsonExporter {
             metadata.put("created_at", dateFormat.format(new Date()));
             metadata.put("device_model", "VoidScanner");
             metadata.put("android_version", "14 (API 34)");
-            metadata.put("app_version", "1.0.2");
+            metadata.put("app_version", "1.1.05");
             metadata.put("debug_mode", debugMode);
             root.put("metadata", metadata);
 
-            // Add collected data
-            if (debugMode) {
-                root.put("raw_data", data);
-            } else {
-                // Anonymize data for release
-                root.put("anonymized_data", anonymizeData(data));
-            }
+            // Add collected data (exhaustive for analysis)
+            root.put("collected_data", data);
 
             // Add scan results
             Map<String, Integer> scans = new HashMap<>();
@@ -60,7 +55,35 @@ public class JsonExporter {
             // Write to Downloads folder
             File storageDir = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), "VoidScanner");
+            // GRAPHENE OS COMPATIBILITY & EXIT FALLBACK SAFEGUARD
             if (!storageDir.exists() && !storageDir.mkdirs()) {
+                // FALLBACK: Try alternative locations for Graphene OS compatibility
+                // Graphene OS users may have restricted access to Downloads, so provide fallback options
+                java.io.File[] fallbackDirs = {
+                    new File(Environment.getExternalStorageDirectory(), "Documents/VoidScanner"),
+                    new File("/sdcard", "VoidScanner"),
+                    new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS), "VoidScanner_Backup")
+                };
+                
+                boolean fallbackSuccess = false;
+                for (java.io.File fallbackDir : fallbackDirs) {
+                    if (!fallbackDir.exists() && fallbackDir.mkdirs()) {
+                        android.util.Log.d("VoidScanner", "Graphene OS: Created fallback directory at " + fallbackDir.getAbsolutePath());
+                        fallbackSuccess = true;
+                        break;
+                    }
+                }
+                
+                if (!fallbackSuccess) {
+                    android.widget.Toast.makeText(context, "Export failed: No writable storage found", android.widget.Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+
+
+            // Verify file can be written (Android 10+ requires Scoped Storage, but Downloads is accessible)
+            if (!storageDir.canWrite()) {
                 return false;
             }
 

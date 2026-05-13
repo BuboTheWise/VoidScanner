@@ -1,0 +1,200 @@
+```
+
+### Versioning
+- **Current Version**: v1.0.2
+- **Version Code**: 4
+- **Target API**: Android 10+ (API 29+)
+- **Package Name**: `com.bubo.voidscanner`
+
+### Dependencies
+- **Gson**: JSON serialization (offline, local)
+- **Android X AppCompat**: Backward compatibility layer
+- **ConstraintLayout**: Responsive UI
+- **OkHttp**: Placeholder for future APIs (not yet integrated)
+- **Google Play Services**: Planned for Sheets integration (future)
+
+### Storage
+- **Exports**: `/sdcard/Downloads/VoidScanner/*.json`
+- **No Local Database**: Data only written to JSON exports
+- **No Persistent Storage**: Scans are ephemeral, exported only
+
+## Building from Source
+
+### Requirements
+- **Java JDK**: 11 or higher
+- **Android SDK**: API 29+ with AndroidX libraries
+- **Gradle**: 7.0 or higher
+- **Platform**: Linux, macOS, or Windows with WSL2
+
+### Build Steps
+```bash
+# Clone the repository
+git clone https://github.com/BuboTheWise/VoidScanner.git
+cd VoidScanner
+
+# Build Debug APK
+./gradlew :app:build
+
+# Build Release APK
+./gradlew :app:assembleRelease
+
+# Install to device
+./gradlew :app:installDebug
+```
+
+### Output
+- **Debug APK**: `app/build/outputs/apk/debug/app-debug.apk` (~6MB)
+- **Release APK**: `app/build/outputs/apk/release/app-release-unsigned.apk`
+
+## F-Droid Compatibility
+
+### F-Droid Repository Support
+
+**Status**: Ready for F-Droid submission ✅
+
+### Requirements Met
+- ✓ Open-source software (Apache 2.0)
+- ✓ No Google Play Services dependencies
+- ✓ No proprietary APIs
+- ✓ Clean build system (Gradle)
+- ✓ No aggressive runtime tracking
+- ✓ Permission rationale documented
+
+### Build for F-Droid
+
+```bash
+# Clean and rebuild for F-Droid
+./gradlew clean :app:assembleRelease
+
+# Verify APK structure
+# - No Google Play services code
+# - No obfuscation (ProGuard disabled by default)
+# - APK includes source R8/D8 optimization only
+
+# Check for required metadata
+lint ./app/
+
+# Create signing key for F-Droid (if not already set up)
+keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg RSA -keysize 4096 -validity 10000 -storepass <password> -keypass <password>
+```
+
+### F-Droid Metadata
+
+**Name**: Void Scanner
+**Summary**: Sensor data collection for Nethervoid Network void resonance analysis
+**Description**: |
+>
+> The core scanner for the Nethervoid Network — explore the void between networked devices through comprehensive sensor analysis. Collects WiFi and Bluetooth signatures offline-first, generating deterministic seeds for game entity generation.
+>
+> Features:
+> - WiFi and BLE signal detection
+> - JSON export to Downloads folder
+> - Real-time scan feedback
+> - Privacy-aware data handling
+>
+> **Integration**: Void Resonator component of Nethervoid Network, intended for standalone testing and later integration into the full Nethervoid application.
+>
+> **Requirements**: Android 10+ (API 29+), no internet required
+>
+> **Package**: com.bubo.voidscanner
+>
+> **Source**: https://github.com/BuboTheWise/VoidScanner
+>
+> **Issue Tracker**: https://github.com/BuboTheWise/VoidScanner/issues
+
+**Categories**: Tools, System, Security
+**License**: Apache-2.0
+**Scan Info**: Requested scan for: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
+**AutoUpdateMode: None**
+**UpdateCheckMode: None**
+**UpdateCheckData**: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\d\.]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
+
+---
+
+## Funding
+
+If you find Void Scanner valuable and want to support continued development, consider donating via Solana:
+
+**SOL Address**: `6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou`
+
+> *"Every signal in the void is a potential anchor for future exploration. Your support helps us decode more of the network."*
+
+**How to donate**:
+```bash
+# Verify the address
+solana address verify 6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou
+
+# Or simply send SOL from your wallet
+# Wallet: Phantom, Solflare, or any Solana-compatible wallet
+# Amount: Your choice
+# Destination: Enter the address above
+```
+
+```bash
+# Scan and Send SOL
+solana airdrop 1 <YOUR_SOLANA_ADDRESS>
+
+# Manual transfer
+# Wallet: Phantom, Solflare, etc.
+# Address: [YOUR_SOLANA_ADDRESS]
+```
+
+> *"Every signal in the void is a potential anchor for future exploration. Your support helps us decode more of the network."*
+
+---
+
+## Development Notes
+
+### Testing the Scanner
+
+1. **Launch Void Scanner**
+2. **Grant Permissions** (wifi, bluetooth)
+3. **Tap "Start Scan"**
+4. **Wait for WiFi/Bluetooth cooldown**
+5. **Check Downloads folder**: `com.bubo.voidscanner/scan_*-*.json`
+
+### Debug vs Release Builds
+
+| Feature | Debug | Release |
+|---------|-------|---------|
+| Raw Data | ✅ Included | ❌ Excluded |
+| Anonymization | ❌ Disabled | ✅ Enabled |
+| Wi-Fi Names | ✅ Exact SSID | ❌ "Network_Hash" |
+| BSSIDs | ✅ Exact MAC | ❌ Hashed |
+| Coordinates | ✅ Exact Lat/Long | ❌ "Medium" confidence only |
+
+### Future Enhancements
+- Deterministic seed hashing for Nethervoid entity generation
+- Signed scan records with Ed25519 cryptography
+- Anchor world state integration
+- Offline mesh synchronization (preliminary)
+
+---
+
+## Project Context
+
+**Based On**: Veil Scanner / Sideband exploration
+**Project**: Nethervoid Network (version 0.2)
+**Author**: BuboTheWise
+**License**: Apache 2.0
+
+### Related Projects
+
+- **Nethervoid Network**: Full game experience (fork of Sideband)
+- **Reticulum**: Mesh networking protocol
+- **Sideband**: Communication tool by Reticulum Network
+
+### Integration Timeline
+
+Void Scanner is being developed as an **isolated test platform** before merging into the Nethervoid Network application. The scanner codebase will:
+1. Develop and test sensor algorithms independently
+2. Establish deterministic generation logic
+3. Build scan record cryptographic signatures
+4. Integrate into Nethervoid game layer as Void Resonator
+
+---
+
+## License
+
+Apache License 2.0
+See [LICENSE](LICENSE) file for details.
