@@ -127,8 +127,8 @@ For general discussions, pull requests, or collaboration inquiries:
 
 ### F-Droid Availability
 Void Scanner is published on F-Droid for privacy-focused users. See [F-Droid Compatibility](#fdroid-compatibility) for download links and metadata.
-## Building from Source
 
+## Funding
 ### Requirements
 - **Java JDK**: 11 or higher
 - **Android SDK**: API 29+ with AndroidX libraries
