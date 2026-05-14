@@ -1,0 +1,17 @@
+{
+  "commandLine": [
+    "/home/bubo/.hermes/workspace/Code/VoidScanner/fdroid/.venv/bin/fdroid update",
+    "--verbose"
+  ],
+  "stages": {
+    "delete_disabled_builds": 1778703363594,
+    "index.make repo": 1778703363596,
+    "prepare_apps repo": 1778703363595,
+    "process_apks": 1778703363594,
+    "read_added_date_from_all_apks": 1778703363595,
+    "remove_apks": 1778703363595,
+    "scan_repo_files": 1778703363594
+  },
+  "startTimestamp": 1778732163000,
+  "subcommand": "update"
+}
