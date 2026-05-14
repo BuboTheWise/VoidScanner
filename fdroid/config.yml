@@ -1,0 +1,3 @@
+# F-Droid Server Local Config
+# This file is for local testing only - CI uses GitHub Actions with proper keys
+repo_url: https://github.com/BuboTheWise/VoidScanner/raw/fdroid/repo/
