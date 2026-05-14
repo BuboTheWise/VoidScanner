@@ -126,7 +126,7 @@ For general discussions, pull requests, or collaboration inquiries:
 - Review the [F-Droid Compatibility](#fdroid-compatibility) section for additional guidelines
 
 ### F-Droid Availability
-Void Scanner is published on F-Droid for privacy-focused users. See [F-Droid Compatibility](#fdroid-compatibility) for download links and metadata.
+Void Scanner is hosted via GitHub Pages as a manual F-Droid repository. See [F-Droid Compatibility](#fdroid-compatibility) for repository URL and access instructions.
 
 ## Funding
 ### Requirements
@@ -161,7 +161,7 @@ For questions, issues, or collaboration opportunities:
 - **Repository**: https://github.com/BuboTheWise/VoidScanner
 - **Author**: @BuboTheWise
 - **Issue Tracker**: https://github.com/BuboTheWise/VoidScanner/issues
-- **F-Droid**: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
+- **F-Droid**: https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
 
 ## F-Droid Compatibility
 
