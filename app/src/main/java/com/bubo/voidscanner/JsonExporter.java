@@ -17,6 +17,7 @@ public class JsonExporter {
 
     private final Gson gson;
     private final SimpleDateFormat dateFormat;
+    private final Context context;
 
     public JsonExporter(Context context) {
         // Configure Gson for pretty printing
@@ -25,6 +26,7 @@ public class JsonExporter {
                 .disableHtmlEscaping()
                 .create();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        this.context = context;
     }
 
     public boolean exportData(Map<String, Object> data, String filename, boolean debugMode) {
@@ -37,7 +39,7 @@ public class JsonExporter {
             metadata.put("created_at", dateFormat.format(new Date()));
             metadata.put("device_model", "VoidScanner");
             metadata.put("android_version", "14 (API 34)");
-            metadata.put("app_version", "1.1.05");
+            metadata.put("app_version", "1.1.06");
             metadata.put("debug_mode", debugMode);
             root.put("metadata", metadata);
 
