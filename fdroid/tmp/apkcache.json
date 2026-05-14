@@ -1,0 +1,16 @@
+{
+  "METADATA_VERSION": 20002,
+  "allow_disabled_algorithms": false,
+  "README.md": {
+    "name": "README",
+    "apkName": "README.md",
+    "hash": "d79e7aafe322acea63e2ec1b7b3c33b4ca15fc2b9a5d502638e86e8f703164bf",
+    "hashType": "sha256",
+    "ipfsCIDv1": null,
+    "versionCode": 0,
+    "versionName": "d79e7aa",
+    "packageName": "d79e7aafe322acea63e2ec1b7b3c33b4ca15fc2b9a5d502638e86e8f703164bf",
+    "size": 451,
+    "added": 1778703363.59519
+  }
+}
