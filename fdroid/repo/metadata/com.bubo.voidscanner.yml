@@ -47,5 +47,5 @@ AutoUpdateMode: None
 UpdateCheckMode: None
 UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\d\.]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)\n
 
-Version: "1.1.05"
-VersionCode: "10105"
+Version: "1.1.06"
+VersionCode: "10106"
