@@ -51,17 +51,19 @@ jobs:
     
     - name: Copy signed APK to fdroid/repo
       run: |
-        VERSION=$(cat gradle.properties | grep 'APP_VERSION_PATCH=05')
-        cp app/build/outputs/apk/release/app-release-unsigned.apk fdroid/repo/void-scanner-v1.1.05.apk
+        VERSION=$(cat gradle.properties)
+        APK_NAME=$(echo $VERSION | grep 'APP_VERSION_NAME=' | sed -E 's/.*APP_VERSION_NAME=([^ ]).*/void-scanner-$1.apk/')
+        cp app/build/outputs/apk/release/app-release-unsigned.apk fdroid/repo/$APK_NAME
     
     - name: Run fdroid update to generate index
-      run: cd fdroid && fdroid update
+      working-directory: fdroid
+      run: fdroid update
     
     - name: Commit and push changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "GitHub Actions"
-        git add fdroid/repo/ metadata/
+        git add fdroid/repo/metadata/
         git diff --quiet && git diff --staged --quiet || git commit -m "F-Droid: Update APK and index"
         git push origin main
 
@@ -74,4 +76,4 @@ jobs:
         echo "Repository structure:"
         ls -lah fdroid/repo/
         echo "\nMetadata:"
-        head -20 fdroid/data/metadata/com.bubo.voidscanner.yml
+        head -20 fdroid/repo/metadata/com.bubo.voidscanner.yml
