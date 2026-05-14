@@ -47,10 +47,53 @@ com.bubo.voidscanner/
 ```
 
 ### Versioning
-- **Current Version**: v1.0.2
-- **Version Code**: 4
+
+Void Scanner uses **semantic versioning (SemVer)** with leading zero padding for minor revisions (00-99):
+
+| **Current Version**: 1.1.04 |
+| **Semantic Version Format**: `X.Y.Z` |
+  - **X (MAJOR)**: Breaking changes, major features
+  - **Y (MINOR)**: New features, compatible additions (padded to 2 digits: 01-99)
+  - **Z (PATCH)**: Bug fixes, minor improvements (padded to 2 digits: 00-99) |
+- **Version Code**: Auto-incremented based on semantic ordering
 - **Target API**: Android 10+ (API 29+)
 - **Package Name**: `com.bubo.voidscanner`
+
+#### Version Examples
+
+| Version | Meaning | Change Type |
+|---------|---------|-------------|
+| 1.1.04 → 1.02.00 | New feature release, breaking API additions | Minor increment, PATCH reset |
+| 1.1.04 → 1.01.01 | Bug fix only, no API changes | PATCH increment |
+
+See [Semantic Versioning](https://semver.org/) for full specification.
+
+#### Version Update Workflow
+
+1. **New Release** (increment MINOR, reset PATCH):
+   - Bump `APP_VERSION_MINOR` in `gradle.properties` and reset `APP_VERSION_PATCH=00`
+   - Task naming: Create new task with `t_<major>_<minor>_<patch>` pattern
+   - Version code increments based on semantic ordering
+
+2. **Patch Release** (increment PATCH):
+   - Increment `APP_VERSION_PATCH` by 1 in `gradle.properties`
+   - Use leading zero padding: 0 → 01, 99 → 99
+   - Task naming: Continue using same minor version, increment patch
+
+3. **Create GitHub Release**:
+   ```bash
+   gh release create void-scanner-1.1.04
+   ```
+
+#### Version Configuration
+
+Version properties are centralized in `gradle.properties`:
+
+```properties
+APP_VERSION_MAJOR=1
+APP_VERSION_MINOR=01
+APP_VERSION_PATCH=00
+```
 
 ### Dependencies
 - **Gson**: JSON serialization (offline, local)
@@ -59,13 +102,33 @@ com.bubo.voidscanner/
 - **OkHttp**: Placeholder for future APIs (not yet integrated)
 - **Google Play Services**: Planned for Sheets integration (future)
 
-### Storage
-- **Exports**: `/sdcard/Downloads/VoidScanner/*.json`
-- **No Local Database**: Data only written to JSON exports
-- **No Persistent Storage**: Scans are ephemeral, exported only
+## Developer Contact
 
-## Building from Source
+For questions, issues, or collaboration opportunities:
 
+### Communication Channels
+- **GitHub Repository**: [https://github.com/BuboTheWise/VoidScanner](https://github.com/BuboTheWise/VoidScanner)
+- **Issue Tracker**: [https://github.com/BuboTheWise/VoidScanner/issues](https://github.com/BuboTheWise/VoidScanner/issues)
+- **Author**: @BuboTheWise (BuboTheWise)
+
+### Reporting Issues
+When reporting issues, please include:
+- Device model and Android version
+- Void Scanner version (from About screen)
+- Reproduction steps
+- Any error messages or crash logs
+- Android logcat output (if applicable)
+
+### Collaboration
+For general discussions, pull requests, or collaboration inquiries:
+- Open an issue on GitHub
+- Fork the repository and submit a pull request
+- Review the [F-Droid Compatibility](#fdroid-compatibility) section for additional guidelines
+
+### F-Droid Availability
+Void Scanner is hosted via GitHub Pages as a manual F-Droid repository. See [F-Droid Compatibility](#fdroid-compatibility) for repository URL and access instructions.
+
+## Funding
 ### Requirements
 - **Java JDK**: 11 or higher
 - **Android SDK**: API 29+ with AndroidX libraries
@@ -91,6 +154,14 @@ cd VoidScanner
 ### Output
 - **Debug APK**: `app/build/outputs/apk/debug/app-debug.apk` (~6MB)
 - **Release APK**: `app/build/outputs/apk/release/app-release-unsigned.apk`
+
+## Developer Contact
+
+For questions, issues, or collaboration opportunities:
+- **Repository**: https://github.com/BuboTheWise/VoidScanner
+- **Author**: @BuboTheWise
+- **Issue Tracker**: https://github.com/BuboTheWise/VoidScanner/issues
+- **F-Droid**: https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
 
 ## F-Droid Compatibility
 
@@ -161,7 +232,20 @@ keytool -genkeypair -v -keystore voidscanner.keystore -alias voidscanner -keyalg
 
 If you find Void Scanner valuable and want to support continued development, consider donating via Solana:
 
-**SOL Address**: `[YOUR_SOLANA_ADDRESS]`
+**SOL Address**: `6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou`
+
+> *"Every signal in the void is a potential anchor for future exploration. Your support helps us decode more of the network."*
+
+**How to donate**:
+```bash
+# Verify the address
+solana address verify 6bV1GVVcM6dDazpgD6ZJkoQztn7vyKayFoDoRAhHssou
+
+# Or simply send SOL from your wallet
+# Wallet: Phantom, Solflare, or any Solana-compatible wallet
+# Amount: Your choice
+# Destination: Enter the address above
+```
 
 ```bash
 # Scan and Send SOL
@@ -224,8 +308,6 @@ Void Scanner is being developed as an **isolated test platform** before merging 
 2. Establish deterministic generation logic
 3. Build scan record cryptographic signatures
 4. Integrate into Nethervoid game layer as Void Resonator
-
----
 
 ## License
 
