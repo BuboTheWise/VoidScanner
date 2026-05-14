@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="fdroid/index.xsl"?>
+<fdroid>
+  <repo>
+    <id>com.bubo.voidscanner</id>
+    <name>Void Scanner</name>
+    <desc>Privacy-focused scanner app with IMU resonance detection</desc>
+    <icon>https://raw.githubusercontent.com/BuboTheWise/VoidScanner/fdroid/repo/icons/512.png</icon>
+    <copyright>2023 Bubo</copyright>
+    <license>GPL-3.0</license>
+    <autoUpdate>0</autoUpdate>
+    <addr>https://github.com/BuboTheWise/VoidScanner</addr>
+    <iconsha>0</iconsha>
+    <author>Bubo</author>
+  </repo>
+</fdroid>
