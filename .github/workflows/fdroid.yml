@@ -34,7 +34,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-        cache: 'pip'
 
     - name: Install fdroidserver
       run: pip install fdroidserver
@@ -44,7 +43,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-        cache: 'gradle'
 
     - name: Make gradlew executable
       run: chmod +x gradlew
