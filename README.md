@@ -126,7 +126,7 @@ For general discussions, pull requests, or collaboration inquiries:
 - Review the [F-Droid Compatibility](#fdroid-compatibility) section for additional guidelines
 
 ### F-Droid Availability
-Void Scanner is hosted via GitHub Pages as a manual F-Droid repository. See [F-Droid Compatibility](#fdroid-compatibility) for repository URL and access instructions.
+Void Scanner is available via GitHub Pages F-Droid repository. See [F-Droid Compatibility](#fdroid-compatibility) for repository URL and access instructions.
 
 ## Funding
 ### Requirements
