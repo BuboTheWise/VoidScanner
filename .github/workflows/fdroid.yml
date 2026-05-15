@@ -1,4 +1,4 @@
-name: F-Droid Build and Update
+# F-Droid Build and Update
 
 on:
   push:
@@ -50,26 +50,24 @@ jobs:
     - name: Build release APK
       run: ./gradlew assembleRelease
 
-    - name: Get version info
+    - name: Version info
       id: version
       run: |
-        VERSION_NAME=$(grep 'APP_VERSION_NAME=' gradle.properties | cut -d'=' -f2)
-        VERSION_CODE=$(grep 'APP_VERSION_CODE=' gradle.properties | cut -d'=' -f2)
-        echo "app_version=$VERSION_NAME" >> $GITHUB_OUTPUT
-        echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
-        echo "APK_NAME=void-scanner-${VERSION_NAME}.apk" >> $GITHUB_OUTPUT
-        echo "Version: $VERSION_NAME ($VERSION_CODE)"
+        APP_VERSION_NAME=$(grep 'APP_VERSION_NAME=' gradle.properties | cut -d'=' -f2)
+        APP_VERSION_CODE=$(grep 'APP_VERSION_CODE=' gradle.properties | cut -d'=' -f2)
+        echo "app_version=$APP_VERSION_NAME" >> $GITHUB_OUTPUT
+        echo "version_code=$APP_VERSION_CODE" >> $GITHUB_OUTPUT
+        echo "apk_name=void-scanner-$APP_VERSION_NAME.apk" >> $GITHUB_OUTPUT
+        echo "Version: $APP_VERSION_NAME ($APP_VERSION_CODE)"
 
-    - name: Copy signed APK to fdroid/repo
+    - name: Copy APK to fdroid/repo (manual repo - no signing needed)
       run: |
-        VERSION=$(cat gradle.properties)
-        APK_NAME=$(echo $VERSION | grep 'APP_VERSION_NAME=' | sed -E 's/.*APP_VERSION_NAME=([^ ]+).*/void-scanner-$1.apk/')
+        APK_NAME=${{ steps.version.outputs.apk_name }}
         echo "Copying APK: $APK_NAME"
         cp app/build/outputs/apk/release/app-release.apk fdroid/repo/$APK_NAME
 
-    - name: Run fdroid update to generate index
-      working-directory: fdroid
-      run: fdroid update
+    # Note: No fdroid update needed - this is a manual repository served via GitHub Pages
+    # F-Droid client will auto-detect APK from repo URL
 
     - name: Verify APK is in repo
       run: |
