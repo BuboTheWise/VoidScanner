@@ -10,7 +10,7 @@ ContentRating:
   - noTracking
 License: Apache-2.0
 Name: Void Scanner
-Repo: https://github.com/BuboTheWise/VoidScanner.git
+Repo: https://github.com/BuboTheWise/VoidScanner/tree/main/fdroid/repo
 SourceCode: https://github.com/BuboTheWise/VoidScanner
 Summary: Sensor data collection for Nethervoid Network void resonance analysis
 WebSite: https://github.com/BuboTheWise/VoidScanner
@@ -35,9 +35,9 @@ Description: |
 
   Package: com.bubo.voidscanner
 
-  Source: https://github.com/BuboTheWise/VoidScanner
+Source: https://github.com/BuboTheWise/VoidScanner
 
-  Issue Tracker: https://github.com/BuboTheWise/VoidScanner/issues
+Issue Tracker: https://github.com/BuboTheWise/VoidScanner/issues
 
 License: Apache-2.0
 
@@ -45,7 +45,7 @@ ScanInfo: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidsca
 
 AutoUpdateMode: None
 UpdateCheckMode: None
-UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\d\.]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)\n
+UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\.\d]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
 
 Version: "1.1.06"
 VersionCode: "10106"
