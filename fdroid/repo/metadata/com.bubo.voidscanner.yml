@@ -48,4 +48,4 @@ UpdateCheckMode: None
 UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\.\d]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
 
 Version: "1.1.06"
-VersionCode: "10106"
+VersionCode: "1106"
