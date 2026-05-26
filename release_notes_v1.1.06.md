@@ -12,7 +12,7 @@
 ## Technical Details
 - **Version Format:** 1.1.06 (semantic versioning maintained)  
 - **Build Type:** Release with keystore signing for F-Droid compatibility  
-- **Repository:** Self-hosted F-Droid repository at https://bubothewise.github.io/VoidScanner/repo  
+- **Repository:** GitHub Pages manual F-Droid repo at https://BuboTheWise.github.io/VoidScanner/fdroid/repo/  
 - **Target Devices:** Pixel Fold and Graphene OS (verified compatibility)
 
 ## Installation

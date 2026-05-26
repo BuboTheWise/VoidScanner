@@ -36,8 +36,8 @@ Enhanced Android SDK 34 compatibility with comprehensive sensor collection impro
 ## Technical Details
 
 ### Build Info
-- **Version**: 1.1.03
-- **Build Type**: Release (Signed)
+- **Version**: 1.1.04
+- **Build Type**: Signed Release APK
 - **APK Size**: 5.0 MB
 - **Keystore**: voidscanner.keystore (RSA 4096-bit)
 - **Java**: OpenJDK 17.0.19
@@ -53,17 +53,14 @@ Enhanced Android SDK 34 compatibility with comprehensive sensor collection impro
 
 ## Installation
 
-### From Play Store
-Coming soon...
-
-### F-Droid
-See: https://f-droid.org/packages/com.bubo.voidscanner/
-
 ### Manual Installation
-1. Download `app-release.apk`
+1. Download `app-release.apk` from GitHub Releases
 2. Enable "Unknown Sources" if needed
 3. Install APK
 4. Grant required permissions
+
+### F-Droid
+See: https://f-droid.org/packages/com.bubo.voidscanner/
 
 ## Known Issues
 - Some older Android devices may have limited sensor availability
@@ -91,5 +88,5 @@ See: https://f-droid.org/packages/com.bubo.voidscanner/
 ---
 
 **Developer**: BuboTheWise (@BuboTheWise)
-**Repository**: https://github.com/BuboTheWise/void-scanner
-**License**: TBD (F-Droid compatible)
+**Repository**: https://github.com/BuboTheWise/VoidScanner
+**License**: GPL-3.0
