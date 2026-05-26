@@ -1,0 +1,5 @@
+Task: t_fc8a3458 - Fix Void Scanner Graphene OS Storage Bug
+App version: 1.1.06
+Device: 09291FDD4000 (Graphene OS)
+Issue: No export file created to /sdcard/Download/VoidScanner/
+Reference: JsonExporter.java lines 60-84 fallback paths
