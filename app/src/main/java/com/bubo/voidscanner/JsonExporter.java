@@ -101,6 +101,10 @@ public class JsonExporter {
         }
     }
 
+    private void logDebug(String message) {
+        android.util.Log.d("ExportDebug", message);
+    }
+
     private Map<String, Object> anonymizeData(Map<String, Object> rawData) {
         Map<String, Object> anonymized = new HashMap<>();
 
