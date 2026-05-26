@@ -50,7 +50,7 @@ com.bubo.voidscanner/
 
 Void Scanner uses **semantic versioning (SemVer)** with leading zero padding for minor revisions (00-99):
 
-| **Current Version**: 1.1.04 |
+| **Current Version**: 1.1.06 |
 | **Semantic Version Format**: `X.Y.Z` |
   - **X (MAJOR)**: Breaking changes, major features
   - **Y (MINOR)**: New features, compatible additions (padded to 2 digits: 01-99)
@@ -63,8 +63,8 @@ Void Scanner uses **semantic versioning (SemVer)** with leading zero padding for
 
 | Version | Meaning | Change Type |
 |---------|---------|-------------|
-| 1.1.04 → 1.02.00 | New feature release, breaking API additions | Minor increment, PATCH reset |
-| 1.1.04 → 1.01.01 | Bug fix only, no API changes | PATCH increment |
+| 1.1.06 → 1.02.00 | New feature release, breaking API additions | Minor increment, PATCH reset |
+| 1.1.06 → 1.01.01 | Bug fix only, no API changes | PATCH increment |
 
 See [Semantic Versioning](https://semver.org/) for full specification.
 
@@ -82,7 +82,7 @@ See [Semantic Versioning](https://semver.org/) for full specification.
 
 3. **Create GitHub Release**:
    ```bash
-   gh release create void-scanner-1.1.04
+   gh release create void-scanner-1.1.06
    ```
 
 #### Version Configuration
@@ -92,7 +92,7 @@ Version properties are centralized in `gradle.properties`:
 ```properties
 APP_VERSION_MAJOR=1
 APP_VERSION_MINOR=01
-APP_VERSION_PATCH=00
+APP_VERSION_PATCH=06
 ```
 
 ### Dependencies
