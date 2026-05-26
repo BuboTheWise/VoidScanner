@@ -161,7 +161,7 @@ For questions, issues, or collaboration opportunities:
 - **Repository**: https://github.com/BuboTheWise/VoidScanner
 - **Author**: @BuboTheWise
 - **Issue Tracker**: https://github.com/BuboTheWise/VoidScanner/issues
-- **F-Droid**: https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
+- **F-Droid**: https://bubothewise.github.io/VoidScanner/fdroid/repo/index.xml
 
 ## F-Droid Compatibility
 
