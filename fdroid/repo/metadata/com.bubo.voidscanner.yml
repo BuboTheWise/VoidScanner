@@ -8,7 +8,7 @@ ContentRating:
   - noNonFreeDependency
   - noP2P
   - noTracking
-License: Apache-2.0
+License: GPL-3.0
 Name: Void Scanner
 Repo: https://github.com/BuboTheWise/VoidScanner/tree/main/fdroid/repo
 SourceCode: https://github.com/BuboTheWise/VoidScanner
@@ -39,7 +39,7 @@ Source: https://github.com/BuboTheWise/VoidScanner
 
 Issue Tracker: https://github.com/BuboTheWise/VoidScanner/issues
 
-License: Apache-2.0
+License: GPL-3.0
 
 ScanInfo: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
 
@@ -47,5 +47,5 @@ AutoUpdateMode: None
 UpdateCheckMode: None
 UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\.\d]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
 
-Version: "1.1.06"
-VersionCode: "1106"
+Version: "1.1.07"
+VersionCode: "1107"
