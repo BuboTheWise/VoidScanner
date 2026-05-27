@@ -12,7 +12,7 @@ A privacy-focused scanner app served as a manual GitHub Pages repository.
 
 ## APK Download
 
-Manual APK: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner-1.1.07.apk\`
+Latest: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner-1.1.07.apk\`
 
 ## Repository Info
 
@@ -20,7 +20,7 @@ Manual APK: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner
 |-------|-------|
 | Name | Void Scanner |
 | Version | 1.1.07 |
-| Version Code | 1106 |
+| Version Code | 1107 |
 | Package | com.bubo.voidscanner |
 | License | GPL-3.0 |
 | Repo | https://BuboTheWise.github.io/VoidScanner/fdroid/repo/ |
@@ -50,3 +50,10 @@ F-Droid's federated model has requirements (fingerprinting, etc.) that could imp
 **F-Droid doesn't find the repo**: Check index.xml URL is correct and accessible
 
 **Different version expected**: Always verify the APK filename matches the version you downloaded
+
+## Version History
+
+| Version | APK File |
+|---------|----------|
+| 1.1.07 | void-scanner-1.1.07.apk |
+| 1.1.06 | void-scanner-1.1.06.apk |
