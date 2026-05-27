@@ -12,14 +12,14 @@ A privacy-focused scanner app served as a manual GitHub Pages repository.
 
 ## APK Download
 
-Manual APK: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner-1.1.06.apk\`
+Manual APK: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner-1.1.07.apk\`
 
 ## Repository Info
 
 | Field | Value |
 |-------|-------|
 | Name | Void Scanner |
-| Version | 1.1.06 |
+| Version | 1.1.07 |
 | Version Code | 1106 |
 | Package | com.bubo.voidscanner |
 | License | GPL-3.0 |
