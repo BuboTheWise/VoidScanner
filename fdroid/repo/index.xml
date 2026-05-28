@@ -1,16 +1,2 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="fdroid/index.xsl"?>
-<fdroid>
-  <repo>
-    <id>com.bubo.voidscanner</id>
-    <name>Void Scanner</name>
-    <desc>Privacy-focused scanner app with IMU resonance detection</desc>
-    <icon>https://raw.githubusercontent.com/BuboTheWise/VoidScanner/fdroid/repo/icons/512.png</icon>
-    <copyright>2023 Bubo</copyright>
-    <license>GPL-3.0</license>
-    <autoUpdate>0</autoUpdate>
-    <addr>https://github.com/BuboTheWise/VoidScanner/tree/main/fdroid/repo</addr>
-    <iconsha>0</iconsha>
-    <author>Bubo</author>
-  </repo>
-</fdroid>
+<?xml version='1.0' encoding='UTF-8'?>
+<fdroid><repo id="com.bubo.voidscanner" name="Void Scanner" address="https://github.com/BuboTheWise/VoidScanner/tree/main/fdroid/repo" icon="0" /><application package="com.bubo.voidscanner" versionCode="1107" versionName="1.1.07" signer="0" sdkVersion="29" nativeCode="arm64-v8a armeabi-v7a"><Files><File path="assets" srclen="0" size="0" /><File path="lib" srclen="0" size="0" /></Files><Packages /><PkgSize val="5276" /><SqrtSum val="23064" /><Icon hash="0" srclen="0" size="0" /><apk path="app-release.apk" srclen="0" size="5276323" /></application></fdroid>
