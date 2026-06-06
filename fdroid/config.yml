@@ -1,3 +1,12 @@
-# F-Droid Server Local Config
-# This file is for local testing only - CI uses GitHub Actions with proper keys
 repo_url: https://BuboTheWise.github.io/VoidScanner/fdroid/repo
+repo_name: VoidScanner
+repo_icon: repo/icons/icon.png
+repo_country: US
+
+# Signing configuration
+repo_keyalias: bubo
+keystore: keystore.p12
+keystorepass: changeme
+keypass: changeme
+repo_pubkey: 1F D1 88 B9 30 16 F9 02 3F EE 88 A2 22 A7 40 1E EC DA F3 E2 20 A1 A2 CF 69 1E F2 2E 72 79 2F BA
+repo_signing_key: 1F D1 88 B9 30 16 F9 02 3F EE 88 A2 22 A7 40 1E EC DA F3 E2 20 A1 A2 CF 69 1E F2 2E 72 79 2F BA
