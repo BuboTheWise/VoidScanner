@@ -80,6 +80,24 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(v -> {
             if (locationPermissionGranted && validateAllPermissions()) {
                 new Thread(this::startScanning).start();
+
+                // Generate entities from detected device signatures
+                List<Entity> entities = EntityGenerator.generateFromScan(
+                    currentScanResults,
+                    sensorData
+                );
+                if (!entities.isEmpty()) {
+                    resultsTextView.append("\n\n=== ENTITY DISCOVERY ===\n");
+                    for (Entity entity : entities) {
+                        resultsTextView.append(String.format(
+                            "\n【%s】%s\n  • %s\n  • Stats: %s",
+                            entity.getRarity(),
+                            entity.getName(),
+                            entity.getFlavorText(),
+                            entity.getProperties()
+                        ));
+                    }
+                }
             } else {
                 checkPermissions();
                 Toast.makeText(this, "Please grant all required permissions", Toast.LENGTH_SHORT).show();
