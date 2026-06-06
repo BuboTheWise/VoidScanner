@@ -375,3 +375,28 @@ public class MainActivity extends AppCompatActivity {
             resultsTextView.append(entityDisplay);
         }
     }
+
+    /**
+     * Handle scan start button click
+     */
+    private void handleScanStart() {
+        resultsTextView.setText("Starting scan...");
+
+        // Prepare sensor data collection
+        Map<String, Object> sensorData = new HashMap<>();
+        sensorData.put("available_sensors", "Found WiFi + Bluetooth");
+        sensorData.put("signal_count", scanResults.size());
+
+        // Generate entities from current scan results
+        List<Entity> entities = EntityGenerator.generateFromScan(
+            scanResults.subList(0, Math.min(10, scanResults.size())),
+            sensorData
+        );
+
+        if (!entities.isEmpty()) {
+            displayEntities(entities);
+        }
+
+        // Continue with normal scan logic
+        isScanning = true;
+        statusTextView.setText("Scanning...");
