@@ -80,6 +80,24 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(v -> {
             if (locationPermissionGranted && validateAllPermissions()) {
                 new Thread(this::startScanning).start();
+
+                // Generate entities from detected device signatures
+                List<Entity> entities = EntityGenerator.generateFromScan(
+                    currentScanResults,
+                    sensorData
+                );
+                if (!entities.isEmpty()) {
+                    resultsTextView.append("\n\n=== ENTITY DISCOVERY ===\n");
+                    for (Entity entity : entities) {
+                        resultsTextView.append(String.format(
+                            "\n【%s】%s\n  • %s\n  • Stats: %s",
+                            entity.getRarity(),
+                            entity.getName(),
+                            entity.getFlavorText(),
+                            entity.getProperties()
+                        ));
+                    }
+                }
             } else {
                 checkPermissions();
                 Toast.makeText(this, "Please grant all required permissions", Toast.LENGTH_SHORT).show();
@@ -375,3 +393,28 @@ public class MainActivity extends AppCompatActivity {
             resultsTextView.append(entityDisplay);
         }
     }
+
+    /**
+     * Handle scan start button click
+     */
+    private void handleScanStart() {
+        resultsTextView.setText("Starting scan...");
+
+        // Prepare sensor data collection
+        Map<String, Object> sensorData = new HashMap<>();
+        sensorData.put("available_sensors", "Found WiFi + Bluetooth");
+        sensorData.put("signal_count", scanResults.size());
+
+        // Generate entities from current scan results
+        List<Entity> entities = EntityGenerator.generateFromScan(
+            scanResults.subList(0, Math.min(10, scanResults.size())),
+            sensorData
+        );
+
+        if (!entities.isEmpty()) {
+            displayEntities(entities);
+        }
+
+        // Continue with normal scan logic
+        isScanning = true;
+        statusTextView.setText("Scanning...");
