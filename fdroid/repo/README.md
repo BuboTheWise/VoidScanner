@@ -1,59 +1,28 @@
-# Void Scanner - F-Droid Manual Repository
+# Void Scanner
 
-A privacy-focused scanner app served as a manual GitHub Pages repository.
+**Version**: 1.1.08  
+**Package Code**: 108
 
-## Quick Setup
+## What is Void Scanner?
 
-1. Open F-Droid app
-2. Go to Settings → Add repository
-3. Repository URL: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml\`
-4. Tap Add and Refresh
-5. Search for "Void Scanner" and install
+Void Scanner is a privacy-focused Android application for network and device analysis.
 
-## APK Download
+## Features
 
-Latest: \`https://BuboTheWise.github.io/VoidScanner/fdroid/repo/void-scanner-1.1.07.apk\`
+- WiFi Scanning
+- Bluetooth Discovery
+- Sensor Collection
+- JSON Export
+- Real-time Status
 
-## Repository Info
+## Installation
 
-| Field | Value |
-|-------|-------|
-| Name | Void Scanner |
-| Version | 1.1.07 |
-| Version Code | 1107 |
-| Package | com.bubo.voidscanner |
-| License | GPL-3.0 |
-| Repo | https://BuboTheWise.github.io/VoidScanner/fdroid/repo/ |
-| Source | https://github.com/BuboTheWise/VoidScanner |
+Add repository: https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
 
-## How It Works
+## Permissions
 
-This is a **manual F-Droid repository** configured via GitHub Pages. The APK and metadata files are stored directly in the fdroid/repo directory and served natively.
+Location (WiFi/Bluetooth), Storage (Export)
 
-- No F-Droid federation required
-- Complete privacy control
-- Manual updates controlled by you
-- Versioned APK files for clarity
+## Source Code
 
-## Why Manual?
-
-F-Droid's federated model has requirements (fingerprinting, etc.) that could impact privacy. This approach gives you:
-- Direct control over distribution
-- No server/infrastructure costs  
-- Simple, transparent deployment
-- Privacy-focused approach
-
-## Troubleshooting
-
-**APK won't download**: Ensure the URL ends with the .apk extension
-
-**F-Droid doesn't find the repo**: Check index.xml URL is correct and accessible
-
-**Different version expected**: Always verify the APK filename matches the version you downloaded
-
-## Version History
-
-| Version | APK File |
-|---------|----------|
-| 1.1.07 | void-scanner-1.1.07.apk |
-| 1.1.06 | void-scanner-1.1.06.apk |
+https://github.com/BuboTheWise/VoidScanner
