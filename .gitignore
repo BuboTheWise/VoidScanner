@@ -12,3 +12,10 @@ local.properties
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# F-Droid working directory
+fdroid/config.yml
+fdroid/data/
+fdroid/status/
+fdroid/tmp/
+fdroid/srclibs/
