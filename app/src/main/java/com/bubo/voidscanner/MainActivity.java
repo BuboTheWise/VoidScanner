@@ -28,6 +28,11 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import com.bubo.voidscanner.entities.*;
+import com.bubo.voidscanner.entities.*;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -349,3 +354,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+    /**
+     * Display discovered entities for the current scan
+     */
+    private void displayEntities(List<Entity> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return;
+        }
+
+        resultsTextView.append("\\n\\n=== DISCOVERED ENTITIES ===\\n");
+        
+        for (Entity entity : entities) {
+            String entityDisplay = String.format(
+                    "\\n\\n【RARITY: %s】%s\\n  • %s\\n  • PROPERTIES: %s",
+                    entity.getRarity(),
+                    entity.getName(),
+                    entity.getFlavorText(),
+                    entity.getProperties()
+            );
+            resultsTextView.append(entityDisplay);
+        }
+    }
