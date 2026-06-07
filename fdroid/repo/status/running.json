@@ -1,18 +1,17 @@
 {
   "commandLine": [
     "/home/bubo/.hermes/workspace/Code/VoidScanner/fdroid/.venv/bin/fdroid update",
-    "--create-metadata",
     "--nosign"
   ],
   "stages": {
-    "delete_disabled_builds": 1780689183014,
-    "index.make repo": 1780689183017,
-    "prepare_apps repo": 1780689183016,
-    "process_apks": 1780689183014,
-    "read_added_date_from_all_apks": 1780689183016,
-    "remove_apks": 1780689183015,
-    "scan_repo_files": 1780689183015
+    "delete_disabled_builds": 1780781768778,
+    "index.make repo": 1780781769353,
+    "prepare_apps repo": 1780781769353,
+    "process_apks": 1780781768778,
+    "read_added_date_from_all_apks": 1780781769352,
+    "remove_apks": 1780781769352,
+    "scan_repo_files": 1780781769352
   },
-  "startTimestamp": 1780717982000,
+  "startTimestamp": 1780810568000,
   "subcommand": "update"
 }
