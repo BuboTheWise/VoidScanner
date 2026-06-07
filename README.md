@@ -2,7 +2,7 @@
 
 Privacy-focused Android application for network and device analysis.
 
-## Version 1.1.08
+## Version 1.028
 
 ### New Features
 
@@ -31,7 +31,7 @@ The F-Droid repository is **manual** (hosted on GitHub Pages). To use Void Scann
 
 3. **Trust Repository** (if prompted)
 
-4. **Install Void Scanner v1.1.08**
+4. **Install Void Scanner v1.028**
 
 **Alternative Method (Index URL)**:
 If the automatic detection doesn't work, add the direct index URL instead:
@@ -88,5 +88,5 @@ Apache License 2.0
 
 ***
 
-**Version**: 1.1.08
-**Release Date**: 2026-05-28
+**Version**: 1.028
+**Release Date**: 2026-06-06
