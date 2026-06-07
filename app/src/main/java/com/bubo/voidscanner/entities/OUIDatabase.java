@@ -1,180 +1,63 @@
-package com.bubo.voidscanner.entities;
+package com.bubo.voidscanner;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manages OUI (Organizationally Unique Identifier) database and unknown OUI tracking
- * Following [[Requirements.md]] section 2: OUI/Vendor Intelligence & Entity Mapping
+ * OUIDatabase - Maps MAC address OUI prefixes to entity biases.
+ * Stores known device/vendor types and their associated entity preferences.
+ * 
+ * @version 1.2.0
  */
 public class OUIDatabase {
-    private final Map<String, Entity> knownOUIs;
-    private final Map<String, OUIStats> unknownOUIStats;
-
-    public OUIDatabase() {
-        this.knownOUIs = new HashMap<>();
-        this.unknownOUIStats = new ConcurrentHashMap<>();
+    private static final Map<String, String> OUI_ENTITY_MAP = new LinkedHashMap<>();
+    
+    static {
+        // Init with expanded list from Requirements.md section 2
+        addMapping("00:17:88", "LUMINAR", "Philips Hue smart lighting");
+        addMapping("FC:9C:98", "WATCHER", "Arlo security cameras");
+        addMapping("00:0D:52", "WATCHER", "Arlo older security cameras");
+        addMapping("18:B4:30", "TEMPISTRY", "Nest Google thermostats");
+        addMapping("30:6F:07", "TEMPISTRY", "Ecobee thermostats");
+        addMapping("00:1A:2A", "POWER_ELEM", "TP-Link smart plugs");
+        addMapping("48:3F:DA", "POWER_ELEM", "TP-Link smart home");
+        addMapping("24:9E:10", "WATCHER", "Ring doorbells/cameras");
+        addMapping("B0:CE:18", "POWER_ELEM", "Belkin WeMo smart plugs");
+        addMapping("00:1C:42", "AETHER_DRIFTER", "Apple devices");
+        addMapping("00:1A:79", "ROBUST_EARTH", "Samsung devices");
+        addMapping("84:9A:12", "POWER_ELEM", "Huawei IoT devices");
+        addMapping("44:4A:B1", "NESTLE_DRONE", "Xiaomi smart home");
+        addMapping("00:02:72", "WATCHER", "Netgear smart cameras");
+        addMapping("00:0F:80", "POWER_ELEM", "D-Link IoT devices");
+        addMapping("D4:0C:21", "AETHER_DRIFTER", "Nintendo Switch");
+        addMapping("68:69:4E", "TECH_REVENANT", "Nvidia devices");
+        addMapping("AC:09:7B", "WATCHER", "Logitech sensors");
     }
-
-    public OUIDatabase(Map<String, Entity> initialOIUs) {
-        this.knownOUIs = new HashMap<>(initialOIUs);
-        this.unknownOUIStats = new ConcurrentHashMap<>();
-    }
-
-    /**
-     * Register a known OUI mapping following [[Requirements.md]] section 2
-     *
-     * @param oui OUI address (e.g., "A4:83:E7")
-     * @param vendor Vendor name
-     * @param entity Associated entity for bias
-     */
-    public void registerKnownOUI(String oui, String vendor, Entity entity) {
-        String formattedOUI = normalizeOUI(oui);
-        knownOUIs.put(formattedOUI, entity);
-    }
-
-    /**
-     * Record detection of unknown/unclassified OUI
-     *
-     * @param oui OUI detected
-     * @param rssi RSSI value in dBm
-     */
-    public void recordUnknownOUI(String oui, int rssi) {
-        String formattedOUI = normalizeOUI(oui);
-        unknownOUIStats.computeIfAbsent(formattedOUI, k -> new OUIStats())
-                .addDetection(rssi);
-    }
-
-    /**
-     * Retrieve entity bias for known OUI
-     *
-     * @param oui OUI to look up
-     * @return Entity if found, null if unknown OUI
-     */
-    public Entity getEntityForOUI(String oui) {
-        return knownOUIs.get(normalizeOUI(oui));
-    }
-
-    /**
-     * Check if OUI is in known database
-     */
-    public boolean isKnownOUI(String oui) {
-        return knownOUIs.containsKey(normalizeOUI(oui));
-    }
-
-    /**
-     * Get most frequent unknown OUI
-     *
-     * @param limit Maximum number to return
-     * @return List of top unknown OUIs with stats
-     */
-    public List<OUIStats> getTopUnknownOUIs(int limit) {
-        return unknownOUIStats.entrySet().stream()
-                .sorted((e1, e2) -> e2.getValue().getAverageRSSI() - e1.getValue().getAverageRSSI())
-                .limit(limit)
-                .map(Map.Entry::getValue)
-                .toList();
-    }
-
-    /**
-     * Export unknown OUI list to Bubo_Wisdom vault for [[EntityGenerator]] expansion
-     * Follows [[WORKFLOW-VAULT-CONVENTION]] for markdown output
-     *
-     * @return Markdown-formatted output for vault entry
-     */
-    public String exportUnknownOUIsToVault() {
-        if (unknownOUIStats.isEmpty()) {
-            return "# Unknown OUI Report\n\nNo unknown OUIs detected during scans.";
+    
+    public static List<String> getEntityBiases(String oui) {
+        List<String> biases = new ArrayList<>();
+        // Match exact prefix
+        if (OUI_ENTITY_MAP.containsKey(oui)) {
+            biases.add(OUI_ENTITY_MAP.get(oui));
         }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("# Unknown OUI Report\n\n");
-        sb.append("These unknown device signatures have been detected and will be used to expand [[EntityGenerator]] bias table in future versions.\n\n");
-
-        sb.append("| OUI | Detected Times | Average RSSI (dBm) | Average RSSI | Status |\n");
-        sb.append("|-----|----------------|-------------------|--------------|--------|\n");
-
-        List<OUIStats> topUnknowns = getTopUnknownOUIs(10);
-        for (OUIStats stats : topUnknowns) {
-            sb.append(String.format("| %s | %d | %d | %f | Pending Expansion |\n",
-                    stats.getOui(),
-                    stats.getDetectionCount(),
-                    stats.getAverageRSSI(),
-                    stats.getAverageRSSI()
-            ));
+        // Match first 8 chars of MAC (OUI without colon)
+        String ouiNoColons = oui.replace(":", "");
+        for (Map.Entry<String, String> entry : OUI_ENTITY_MAP.entrySet()) {
+            if (entry.getKey().replace(":", "").startsWith(ouiNoColons.substring(0, 6))) {
+                biases.add(entry.getValue());
+            }
         }
-
-        sb.append("\n## Recommended Actions\n\n");
-        sb.append("1. Verify these OUIs in real-world scanning\n");
-        sb.append("2. Update [[EntityGenerator]] OUI_BIAS_MAP with confirmed vendor mappings\n");
-        sb.append("3. Add flavor text for each new vendor-entity pair\n");
-        sb.append("4. Test entity generation with new OUIs\n");
-
-        return sb.toString();
+        return biases;
     }
-
-    public Map<String, Entity> getKnownOUIs() {
-        return Collections.unmodifiableMap(knownOUIs);
+    
+    public static boolean isKnownOUI(String oui) {
+        return OUI_ENTITY_MAP.containsKey(oui);
     }
-
-    public Map<String, OUIStats> getUnknownOUIStats() {
-        return Collections.unmodifiableMap(unknownOUIStats);
+    
+    public static List<String> getAllOUIs() {
+        return new ArrayList<>(OUI_ENTITY_MAP.keySet());
     }
-
-    /**
-     * OUI statistics class for tracking unknown signatures
-     */
-    public static class OUIStats {
-        private final String oui;
-        private int totalRSSI = 0;
-        private int detectionCount = 0;
-        private long lastSeen = 0;
-
-        public OUIStats() {
-            this.oui = "";
-        }
-
-        public OUIStats(String oui) {
-            this.oui = oui;
-        }
-
-        public void addDetection(int rssi) {
-            totalRSSI += rssi;
-            detectionCount++;
-            lastSeen = System.currentTimeMillis();
-        }
-
-        public double getAverageRSSI() {
-            return detectionCount == 0 ? 0 : (double) totalRSSI / detectionCount;
-        }
-
-        public String getOui() {
-            return oui;
-        }
-
-        public int getDetectionCount() {
-            return detectionCount;
-        }
-
-        public long getLastSeen() {
-            return lastSeen;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("OUIStats{oui='%s', count=%d, avg_rssi=%.2f}",
-                    oui, detectionCount, getAverageRSSI());
-        }
-    }
-
-    private String normalizeOUI(String oui) {
-        // Convert to uppercase and remove colons: "A4:83:E7" -> "A483E7"
-        return oui.trim().toUpperCase().replace(":", "");
-    }
-
-    @Override
-    public String toString() {
-        return String.format("OUIDatabase{known=%d, unknown=%d}",
-                knownOUIs.size(), unknownOUIStats.size());
+    
+    private static void addMapping(String oui, String entityBias, String note) {
+        OUI_ENTITY_MAP.put(oui, entityBias);
     }
 }
