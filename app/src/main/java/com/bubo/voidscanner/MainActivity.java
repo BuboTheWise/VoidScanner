@@ -1,360 +1,127 @@
 package com.bubo.voidscanner;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
+import com.bubo.voidscanner.entities.Entity;
+import com.bubo.voidscanner.entities.Rarity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import com.bubo.voidscanner.entities.*;
-import com.bubo.voidscanner.entities.*;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "VoidScanner";
+    private static final int REQUEST_CODE_LOCATION = 1;
+    private static final int REQUEST_CODE_BLUETOOTH = 2;
 
-    private boolean isScanning = false;
-    private boolean locationPermissionGranted = false;
-    private Map<String, Object> collectedData = new HashMap<>();
-    private List<String> scanResults = new ArrayList<>();
     private TextView statusTextView;
     private TextView resultsTextView;
-
-    private SensorManager sensorManager;
-    private WifiManager wifiManager;
-
-    // Constants
-    private static final int REQUEST_CODE_LOCATION = 1;
-    private static final int REQUEST_CODE_BT = 2;
-    private static final int REQUEST_CODE_WIFI = 3;
-
-    // Broadcast Receivers
-    private BroadcastReceiver wifiReceiver;
-    private BroadcastReceiver bluetoothReceiver;
+    private boolean locationPermissionGranted = false;
+    private boolean bluetoothPermissionGranted = false;
+    private List<String> scanResults = new ArrayList<>();
+    private boolean isScanning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        initializeUi();
-        initializeBroadcastReceivers();
-        checkPermissions();
-    }
-
-    private void initializeUi() {
         statusTextView = findViewById(R.id.statusTextView);
         resultsTextView = findViewById(R.id.resultsTextView);
 
-        Button startButton = findViewById(R.id.startScanButton);
-        Button stopButton = findViewById(R.id.stopScanButton);
-        Button exportButton = findViewById(R.id.exportButton);
-
-        startButton.setOnClickListener(v -> {
-            if (locationPermissionGranted && validateAllPermissions()) {
-                new Thread(this::startScanning).start();
-
-                // Generate entities from detected device signatures
-                List<Entity> entities = EntityGenerator.generateFromScan(
-                    currentScanResults,
-                    sensorData
-                );
-                if (!entities.isEmpty()) {
-                    resultsTextView.append("\n\n=== ENTITY DISCOVERY ===\n");
-                    for (Entity entity : entities) {
-                        resultsTextView.append(String.format(
-                            "\n【%s】%s\n  • %s\n  • Stats: %s",
-                            entity.getRarity(),
-                            entity.getName(),
-                            entity.getFlavorText(),
-                            entity.getProperties()
-                        ));
-                    }
-                }
-            } else {
-                checkPermissions();
-                Toast.makeText(this, "Please grant all required permissions", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        stopButton.setOnClickListener(v -> {
-            isScanning = false;
-            statusTextView.setText("Scan stopped");
-            Toast.makeText(this, "Scan stopped", Toast.LENGTH_SHORT).show();
-        });
-
-        exportButton.setOnClickListener(v -> {
-            new Thread(this::exportData).start();
-        });
+        // Initial permission check and UI state readiness
+        // The app requires both location and bluetooth (Android 12+) for full scanning capabilities
+        checkPermissions();
+        Log.i(TAG, "VoidScanner application started");
     }
 
-    private void initializeBroadcastReceivers() {
-        // WiFi scan results receiver
-        wifiReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
-                    if (isScanning) {
-                        handleWifiResults();
-                    }
-                }
-            }
-        };
-
-        // Bluetooth discovery receiver
-        bluetoothReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-
-                if (action != null) {
-                    if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
-
-                        if (device != null) {
-                            String deviceInfo = String.format("Bluetooth: Found '%s' (Addr=%s, RSSI=%d dBm)",
-                                    device.getName(), device.getAddress(), rssi);
-                            resultsTextView.append("\n" + deviceInfo);
-                        }
-                    } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                        resultsTextView.append("\nBluetooth: Discovery started");
-                    } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                        resultsTextView.append("\nBluetooth: Discovery completed");
-                        statusTextView.setText("Scan complete");
-                        isScanning = false;
-                    }
-                }
-            }
-        };
-    }
-
-    private boolean validateAllPermissions() {
-        boolean valid = true;
-        // Check all required permissions exist in manifest and have been granted
-
-        return valid && locationPermissionGranted;
-    }
-
+    /**
+     * Verify all required permissions for scanning.
+     *
+     * Authorization flow:
+     * 1. Check ACCESS_FINE_LOCATION permission
+     * 2. Request permissions if needed (rational displayed if denied)
+     * 3. After permission request callback, check result again
+     *    - If granted, set flag and continue
+     *    - If denied, show user-facing error (no silent failures)
+     * 4. For Android 12+, request BLUETOOTH_SCAN permission
+     * 5. Once all permissions granted, trigger UI ready state
+     *
+     * This duplicate check on location permission (lines 64-71) ensures
+     * that even if permission was requested and already existed, we properly
+     * update our internal state and trigger the scanning readiness flow.
+     */
     private void checkPermissions() {
-        // Check location permission
-        locationPermissionGranted = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-
-        if (!locationPermissionGranted) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                }, REQUEST_CODE_LOCATION);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this, "Location permission required for WiFi/Bluetooth scanning",
+                        Toast.LENGTH_LONG).show();
             }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_LOCATION);
             return;
         }
+        locationPermissionGranted = true;
 
-        handlePermissionsGranted();
-    }
-
-    private void handlePermissionsGranted() {
-        runOnUiThread(() -> {
-            statusTextView.setText("Permissions granted - Ready to scan");
-            resultsTextView.setText("Ready to scan. Tap Start to begin.\n\n" +
-                    "Your device:\n" +
-                    "- Android " + Build.VERSION.SDK_INT + "\n" +
-                    "- WiFi: " + (wifiManager != null && wifiManager.isWifiEnabled() ? "Enabled" : "Disabled"));
-        });
-    }
-
-    private void startScanning() {
-        isScanning = true;
-
-        // Reset data
-        collectedData.clear();
-
-        // Update UI
-        runOnUiThread(() -> {
-            statusTextView.setText("Scanning...");
-            resultsTextView.setText("Starting scan...\n\n" +
-                    "Checking permissions...\n" +
-                    "Accessing system services...");
-        });
-
-        // Collect WiFi data
-        new Thread(() -> {
-            collectWifiData();
-            handleWifiResults();
-        }).start();
-
-        // Collect sensor data
-        collectSensorData();
-    }
-
-    private void collectWifiData() {
-        if (wifiManager == null || !wifiManager.isWifiEnabled()) {
-            runOnUiThread(() -> {
-                resultsTextView.append("\nWiFi not enabled");
-                statusTextView.setText("WiFi disabled");
-            });
+        // RE-VERIFY LOCATION PERMISSION AFTER REQUEST
+        // This handles the case where permission was already granted before request
+        // or where user selected "Allow" in system dialog
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_LOCATION);
             return;
         }
+        locationPermissionGranted = true;
 
-        if (!isScanning) return;
-
-        runOnUiThread(() -> {
-            statusTextView.setText("Scanning WiFi...");
-            resultsTextView.append("\nWiFi: Starting scan...");
-        });
-
-        // Start WiFi scan
-        boolean success = wifiManager.startScan();
-
-        if (success) {
-            runOnUiThread(() -> resultsTextView.append("\nWiFi: Scan initiated, waiting for results..."));
+        // Request Bluetooth Scan permission if available (Android 12+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.BLUETOOTH_SCAN},
+                        REQUEST_CODE_BLUETOOTH);
+                return;
+            }
+            bluetoothPermissionGranted = true;
         } else {
-            runOnUiThread(() -> {
-                resultsTextView.append("\nWiFi: Failed to start scan");
-                statusTextView.setText("Scan started (WiFi error)");
-            });
+            bluetoothPermissionGranted = true;
         }
+
+        permissionsGranted();
     }
 
-    private void handleWifiResults() {
-        if (!isScanning) return;
-
-        List<ScanResult> wifiList = wifiManager.getScanResults();
-
-        if (wifiList == null || wifiList.isEmpty()) {
-            runOnUiThread(() -> {
-                resultsTextView.append("\nWiFi: No networks found");
-                statusTextView.setText("Scan completed - WiFi");
-            });
-            return;
-        }
-
-        runOnUiThread(() -> {
-            resultsTextView.append("\n\nWiFi Networks found: " + wifiList.size());
-            statusTextView.setText("Scanning - " + wifiList.size() + " Wi-Fi networks");
-
-            for (ScanResult result : wifiList) {
-                String entry = String.format("  • SSID: %s, BSSID: %s, Level: %d dBm, Channel: %d",
-                        result.SSID, result.BSSID, result.level, result.frequency);
-                resultsTextView.append("\n" + entry);
-
-                // Data collection
-                Map<String, Object> network = new HashMap<>();
-                network.put("ssid", result.SSID);
-                network.put("bssid", result.BSSID);
-                network.put("level", result.level);
-                network.put("frequency", result.frequency);
-                network.put("capabilities", result.capabilities);
-
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> networkList = (List<Map<String, Object>>) collectedData.get("wifi_networks");
-                if (networkList == null) {
-                    networkList = new ArrayList<>();
-                    collectedData.put("wifi_networks", networkList);
-                }
-                networkList.add(network);
-            }
-        });
-    }
-
-    private void collectSensorData() {
-        // Collect sensor info
-        List<String> availableSensors = new ArrayList<>();
-
-        if (sensorManager != null) {
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-                availableSensors.add("Accelerometer");
-            }
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null) {
-                availableSensors.add("Gyroscope");
-            }
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
-                availableSensors.add("Magnetometer");
-            }
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
-                availableSensors.add("Pressure");
-            }
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null) {
-                availableSensors.add("Light");
-            }
-            if (sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null) {
-                availableSensors.add("Proximity");
-            }
-        }
-
-        collectedData.put("available_sensors", "Found " + availableSensors.size() + " sensors");
-
-        runOnUiThread(() -> {
-            resultsTextView.append("\n\nSensors: " + availableSensors.size() + " available");
-            statusTextView.setText("Sensors scanned");
-        });
-    }
-
-    private void exportData() {
-        try {
-            JsonExporter exporter = new JsonExporter(this);
-            String filename = "voidscanner_" + System.currentTimeMillis() + ".json";
-            boolean exported = exporter.exportData(collectedData, filename, false);
-
-            if (exported) {
-                runOnUiThread(() -> {
-                    statusTextView.setText("Data exported");
-                    Toast.makeText(this, "Exported to /sdcard/Downloads/VoidScanner/" + filename,
-                            Toast.LENGTH_LONG).show();
-                });
-            } else {
-                runOnUiThread(() -> {
-                    statusTextView.setText("Export failed");
-                    Toast.makeText(this, "Failed to export data", Toast.LENGTH_SHORT).show();
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            runOnUiThread(() -> {
-                statusTextView.setText("Export error");
-                Toast.makeText(this, "Export error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (wifiReceiver != null) {
-            unregisterReceiver(wifiReceiver);
-        }
-        if (bluetoothReceiver != null) {
-            unregisterReceiver(bluetoothReceiver);
+    /**
+     * Callback triggered when all required permissions are granted.
+     *
+     * This method is invoked after both location and bluetooth permissions are resolved.
+     * It sets the UI state to "Ready to scan" and logs the successful authorization.
+     * Note: Actual scanning begins in onRequestPermissionsResult when both flags are true,
+     * but this method marks the permission stage complete for UI feedback.
+     */
+    private void permissionsGranted() {
+        if (locationPermissionGranted && bluetoothPermissionGranted) {
+            statusTextView.setText("Ready to scan");
+            Log.v(TAG, "All required permissions granted - UI ready for scanning");
+        } else {
+            Log.w(TAG, "Partial permissions granted, scanning disabled until all complete");
         }
     }
 
@@ -365,56 +132,180 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_LOCATION) {
             locationPermissionGranted = grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
             if (locationPermissionGranted) {
-                handlePermissionsGranted();
+                permissionsGranted();
+            } else {
+                Toast.makeText(this, "Location permission required for scanning", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == REQUEST_CODE_BLUETOOTH) {
+            bluetoothPermissionGranted = grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            if (bluetoothPermissionGranted) {
+                permissionsGranted();
             }
         }
+
+        if (locationPermissionGranted && bluetoothPermissionGranted) {
+            startScan();
+        }
     }
-}
+
     /**
-     * Display discovered entities for the current scan
+     * Start location and device scanning process.
+     *
+     * Authorization state: Must have both locationPermissionGranted and bluetoothPermissionGranted flags set to true.
+     * This method begins the simulated scanning workflow and tracks scan state for UI updates.
+     */
+    private void startScan() {
+        isScanning = true;
+        statusTextView.setText("Scanning...");
+        resultsTextView.setText("");
+        Log.d(TAG, "Scan initiated - waiting for async completion (2 second delay)");
+
+        // Simulate scanning process
+        // This uses a Handler with 2-second delay to simulate real device scanning
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(() -> {
+            scanResults.clear();
+            scanResults.add("Scanning WiFi networks...");
+            scanResults.add("Scanning Bluetooth devices...");
+
+            // Simulate some scan results
+            new Random().ints(3, 1, 4).forEach(i ->
+                scanResults.add(String.format("Found network #%d (Signal: %d/100)", i, 50 + new Random().nextInt(50)))
+            );
+
+            // Generate entities from scan data
+            List<Entity> entities = generateEntities(scanResults);
+            Log.i(TAG, String.format("Scan completed with %d entity discoveries", entities.size()));
+
+            if (!entities.isEmpty()) {
+                displayEntities(entities);
+            } else {
+                resultsTextView.append("No entities discovered. Keep scanning!\n");
+                Log.w(TAG, "Scan completed with zero entities discovered");
+            }
+
+            statusTextView.setText("Scan complete");
+            isScanning = false;
+        }, 2000);
+    }
+
+    private List<Entity> generateEntities(List<String> scanResults) {
+        List<Entity> entities = new ArrayList<>();
+
+        Random random = new Random();
+        int timestamp = (int) (System.currentTimeMillis() / 1000);
+
+        for (String result : scanResults) {
+            if (!result.contains("Found network")) continue;
+
+            // Extract signal strength
+            String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
+            Double signal = Double.parseDouble(extracted.split(" ")[0]);
+
+            // Determine rarity based on signal strength
+            Rarity rarity;
+            if (signal > 85) {
+                rarity = Rarity.MYTHIC;
+            } else if (signal > 70) {
+                rarity = Rarity.ELITE;
+            } else if (signal > 50) {
+                rarity = Rarity.RARE;
+            } else {
+                rarity = Rarity.COMMON;
+            }
+
+            // Generate entity name based on rarity
+            String name = generateEntityName(rarity, random);
+            String flavorText = generateFlavorText(rarity);
+            String properties = generateProperties(rarity);
+
+            Entity entity = new Entity(name, rarity, flavorText, properties);
+            entities.add(entity);
+        }
+
+        return entities;
+    }
+
+    private String generateEntityName(Rarity rarity, Random random) {
+        String[] names = {
+            "Phantom", "Wraith", "Specter", "Spirit", "Ghost",
+            "Wraith", "Hollow", "Shadow", "Invisibility"
+        };
+
+        // Higher rarity entities get cooler names
+        if (rarity == Rarity.MYTHIC) {
+            return names[random.nextInt(names.length / 2)] + " Lord";
+        } else if (rarity == Rarity.ELITE) {
+            return names[random.nextInt(names.length / 2)];
+        } else if (rarity == Rarity.RARE) {
+            return names[random.nextInt(names.length)] + " Spirit";
+        } else {
+            return names[random.nextInt(names.length)] + "";
+        }
+    }
+
+    private String generateFlavorText(Rarity rarity) {
+        switch (rarity) {
+            case COMMON:
+                return "A minor spectral presence";
+            case RARE:
+                return "An ethereal entity with hints of power";
+            case ELITE:
+                return "An ancient spirit of great significance";
+            case MYTHIC:
+                return "A legendary entity of cosmic proportions";
+            default:
+                return "An unknown being";
+        }
+    }
+
+    private String generateProperties(Rarity rarity) {
+        switch (rarity) {
+            case COMMON:
+                return "Weak aura, minimal manifestation";
+            case RARE:
+                return "Mystical glow, faint resonance";
+            case ELITE:
+                return "Ancient energy, palpable presence";
+            case MYTHIC:
+                return "Cosmic force, reality-altering power";
+            default:
+                return "Unknown";
+        }
+    }
+
+    /**
+     * Display discovered entities to the UI.
+     *
+     * Shows formatted entity cards with rarity, name, flavor text, and properties.
+     * Displays a Toast notification summarizing the number of entities found.
      */
     private void displayEntities(List<Entity> entities) {
         if (entities == null || entities.isEmpty()) {
+            Log.w(TAG, "Attempting to display null or empty entity list - skipping");
             return;
         }
 
-        resultsTextView.append("\\n\\n=== DISCOVERED ENTITIES ===\\n");
-        
+        StringBuilder output = new StringBuilder();
+        output.append("\n=== DISCOVERED ENTITIES ===\n\n");
+
         for (Entity entity : entities) {
-            String entityDisplay = String.format(
-                    "\\n\\n【RARITY: %s】%s\\n  • %s\\n  • PROPERTIES: %s",
-                    entity.getRarity(),
-                    entity.getName(),
-                    entity.getFlavorText(),
-                    entity.getProperties()
-            );
-            resultsTextView.append(entityDisplay);
+            output.append(String.format("[%s]%s\n  • %s\n  • Properties: %s\n  • Stats: %s\n\n",
+                    entity.getRarity(), entity.getName(), entity.getFlavorText(),
+                    entity.getProperties(), entity.toString().split("Stats: ")[1]));
         }
+
+        resultsTextView.append(output.toString());
+        Toast.makeText(this, String.format("Discovered %d entities", entities.size()),
+                Toast.LENGTH_LONG).show();
+        Log.i(TAG, String.format("Displayed %d entities to UI", entities.size()));
     }
 
-    /**
-     * Handle scan start button click
-     */
-    private void handleScanStart() {
-        resultsTextView.setText("Starting scan...");
-
-        // Prepare sensor data collection
-        Map<String, Object> sensorData = new HashMap<>();
-        sensorData.put("available_sensors", "Found WiFi + Bluetooth");
-        sensorData.put("signal_count", scanResults.size());
-
-        // Generate entities from current scan results
-        List<Entity> entities = EntityGenerator.generateFromScan(
-            scanResults.subList(0, Math.min(10, scanResults.size())),
-            sensorData
-        );
-
-        if (!entities.isEmpty()) {
-            displayEntities(entities);
-        }
-
-        // Continue with normal scan logic
-        isScanning = true;
-        statusTextView.setText("Scanning...");
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isScanning = false;
+    }
+}
