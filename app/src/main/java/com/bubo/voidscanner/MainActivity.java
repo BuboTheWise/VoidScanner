@@ -15,7 +15,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.bubo.voidscanner.entities.Entity;
 import com.bubo.voidscanner.entities.Rarity;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,16 +127,51 @@ public class MainActivity extends AppCompatActivity {
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(() -> {
             scanResults.clear();
+            
+            // Add more realistic simulated scan results for both WiFi and Bluetooth
             scanResults.add("Scanning WiFi networks...");
             scanResults.add("Scanning Bluetooth devices...");
+            
+            // Simulate some real scan results with proper signal strengths and OUIs
+            Random random = new Random();
+            
+            // Add some WiFi networks with OUIs  
+            for (int i = 0; i < 3; i++) {
+                String oui = String.format("%02X:%02X:%02X", 
+                        random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                
+                // Include some known OUIs for demonstration
+                if (i == 0 && random.nextBoolean()) {
+                    oui = "00:17:88"; // Philips Hue
+                } else if (i == 1 && random.nextBoolean()) {
+                    oui = "00:1A:A0"; // Arlo
+                }
+                
+                String signalStrength = String.format("%d", 50 + random.nextInt(50));
+                scanResults.add(String.format("Found WiFi network %s (Signal: %s/100, OUI: %s)", 
+                        i+1, signalStrength, oui));
+            }
 
-            // Simulate some scan results
-            new Random().ints(3, 1, 4).forEach(i ->
-                scanResults.add(String.format("Found network #%d (Signal: %d/100)", i, 50 + new Random().nextInt(50)))
+            // Add some Bluetooth devices with OUIs
+            for (int i = 0; i < 2; i++) {
+                String oui = String.format("%02X:%02X:%02X", 
+                        random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                
+                // Include some known OUIs for demonstration
+                if (i == 0 && random.nextBoolean()) {
+                    oui = "00:1A:A0"; // Arlo
+                }
+                
+                String signalStrength = String.format("%d", 60 + random.nextInt(40));
+                scanResults.add(String.format("Found Bluetooth device %s (Signal: %s/100, OUI: %s)", 
+                        i+1, signalStrength, oui));
+            }
+
+            // Generate entities using EntityGenerator with Bluetooth/WiFi/IMU integration
+            List<DiscoveredEntity> entities = EntityGenerator.generateFromScan(
+                    String.valueOf(System.currentTimeMillis()),
+                    extractScanFeatures(scanResults)
             );
-
-            // Generate entities from scan data
-            List<Entity> entities = generateEntities(scanResults);
 
             if (!entities.isEmpty()) {
                 displayEntities(entities);
@@ -148,6 +182,96 @@ public class MainActivity extends AppCompatActivity {
             statusTextView.setText("Scan complete");
             isScanning = false;
         }, 2000);
+    }
+
+    /**
+     * Extract scan features for EntityGenerator.generateFromScan()
+     * Integrate Bluetooth/WiFi/IMU data metrics
+     */
+    private EntityGenerator.ScanFeatures extractScanFeatures(List<String> scanResults) {
+        EntityGenerator.ScanFeatures features = new EntityGenerator.ScanFeatures();
+
+        Random random = new Random();
+
+        // Bluetooth (Human density)
+        int bluetoothCount = 0;
+        int strongBluetooth = 0;
+        for (String result : scanResults) {
+            if (result.contains("Bluetooth device")) {
+                bluetoothCount++;
+                // Extract signal strength for strong Bluetooth detection
+                String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
+                Double signal = Double.parseDouble(extracted.split(" ")[0].replace("/", ""));
+                if (signal > 50) {
+                    strongBluetooth++;
+                }
+                
+                // Try to extract OUI from the result for vendor bias
+                if (result.contains("OUI:")) {
+                    String oui = result.substring(result.lastIndexOf("OUI:") + 4).trim();
+                    if (EntityGenerator.isKnownOui(oui)) {
+                        features.unknownOuis.add(oui);
+                    }
+                }
+            }
+        }
+        features.humanDensity = bluetoothCount;
+        features.proximity = strongBluetooth;
+
+        // IoT Presence (Known OUIs from OUIDatabase)
+        int iotCount = 0;
+        Map<String, Integer> ouiCounts = new HashMap<>();
+        for (String result : scanResults) {
+            if (result.contains("Found WiFi network") || result.contains("Found Bluetooth device")) {
+                // Try to extract OUI
+                String oui = null;
+                if (result.contains("OUI: ")) {
+                    oui = result.substring(result.lastIndexOf("OUI: ") + 5).trim();
+                }
+                
+                if (oui != null) {
+                    if (EntityGenerator.isKnownOui(oui)) {
+                        iotCount++;
+                        ouiCounts.put(oui, ouiCounts.getOrDefault(oui, 0) + 1);
+                    } else {
+                        features.unknownOuis.add(oui);
+                    }
+                }
+            }
+        }
+        features.iotPresence = iotCount;
+
+        // WiFi Chaos & Tech Level
+        features.wifiRssiAvg = 45 + random.nextInt(30);  // Average 45-75 dBm
+        features.signalChaos = scanResults.stream().filter(r -> r.contains("Found")).mapToInt(r -> random.nextInt(20) + 10).sum();
+        features.techLevel = random.nextInt(100);
+
+        // Environmental & Movement
+        features.movement = 1.5 + random.nextDouble() * 3.0;
+        features.environment = random.nextInt(1000);
+        features.direction = random.nextBoolean() ? "OUTDOOR" : "INDOOR";
+        features.beaconCount = random.nextInt(5);
+
+        return features;
+    }
+
+    private void displayEntities(List<DiscoveredEntity> entities) {
+        resultsTextView.append("Entities discovered:\n\n");
+
+        int index = 1;
+        for (DiscoveredEntity entity : entities) {
+            String entityStr = String.format(
+                    "%d. **%s** (%s)\n   %s\n   Power: %d\n\n",
+                    index++,
+                    entity.getName(),
+                    entity.getRarity(),
+                    entity.getFlavorText(),
+                    entity.getPowerLevel()
+            );
+            resultsTextView.append(entityStr);
+        }
+
+        Log.d(TAG, "Discovered " + entities.size() + " entities");
     }
 
     private List<Entity> generateEntities(List<String> scanResults) {
@@ -197,66 +321,32 @@ public class MainActivity extends AppCompatActivity {
         if (rarity == Rarity.MYTHIC) {
             return names[random.nextInt(names.length / 2)] + " Lord";
         } else if (rarity == Rarity.ELITE) {
-            return names[random.nextInt(names.length / 2)];
+            return names[random.nextInt(names.length / 2)] + " Knight";
         } else if (rarity == Rarity.RARE) {
-            return names[random.nextInt(names.length)] + " Spirit";
+            return names[random.nextInt(names.length)];
         } else {
-            return names[random.nextInt(names.length)] + "";
+            return names[random.nextInt(names.length)];
         }
     }
 
     private String generateFlavorText(Rarity rarity) {
-        switch (rarity) {
-            case COMMON:
-                return "A minor spectral presence";
-            case RARE:
-                return "An ethereal entity with hints of power";
-            case ELITE:
-                return "An ancient spirit of great significance";
-            case MYTHIC:
-                return "A legendary entity of cosmic proportions";
-            default:
-                return "An unknown being";
-        }
+        String[] texts = {
+            "A whisper of shadow passes through.",
+            "Life echoes faintly in the void.",
+            "Something stirs in the distance.",
+            "A faint resonance lingers here."
+        };
+        return texts[0];
     }
 
     private String generateProperties(Rarity rarity) {
         switch (rarity) {
-            case COMMON:
-                return "Weak aura, minimal manifestation";
-            case RARE:
-                return "Mystical glow, faint resonance";
-            case ELITE:
-                return "Ancient energy, palpable presence";
             case MYTHIC:
-                return "Cosmic force, reality-altering power";
+                return "✨ Mythic | 🔮 Legendary | ☠ High Damage";
+            case ELITE:
+                return "⭐ Elite | ⚡ Enhanced | ⚔ Very High Damage";
             default:
-                return "Unknown";
+                return "⚔ Common | 🛡 Standard Defense";
         }
-    }
-
-    private void displayEntities(List<Entity> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return;
-        }
-
-        StringBuilder output = new StringBuilder();
-        output.append("\n=== DISCOVERED ENTITIES ===\n\n");
-
-        for (Entity entity : entities) {
-            output.append(String.format("【%s】%s\n  • %s\n  • Properties: %s\n  • Stats: %s\n\n",
-                    entity.getRarity(), entity.getName(), entity.getFlavorText(),
-                    entity.getProperties(), entity.toString().split("Stats: ")[1]));
-        }
-
-        resultsTextView.append(output.toString());
-        Toast.makeText(this, String.format("Discovered %d entities", entities.size()),
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        isScanning = false;
     }
 }
