@@ -1,3 +1,121 @@
+## CRITICAL NOTES
+
+**Phase 1 status:** Builds 1.1.1 through 1.1.4 were planned as part of the Sensor Expansion phase. Per audit (2026-07-02), these entities are documented in the build plan but have NOT been implemented yet — the canonical collectors (`CellTowerTracker`, `ImuSensorCollector`, `EnvironmentalSensorReader`) do not exist in the current source tree. Only `WifiScout`, `BluetoothScanner`, and `GoogleSheetsExporter` ship today. Phase 2 tasks below list Phase 1 as dependencies, meaning they remain blocked until a decision is made on whether to implement or formally defer Phase 1.
+
+---
+
+## HIGH: Sensor Expansion (Phase 1)
+
+> **Decision needed before proceeding:** The original mentorship build plan (Builds 1.1.1-1.1.4) defined four sensor collectors that were never coded. Either implement them below, or mark the whole tier as deferred and update Phase 2 dependencies accordingly. Leaving these as planned for now with explicit "not yet implemented" markers so the dependency chain is honest rather than silently broken.
+
+### Task ID: task-build-1.1.1-location
+
+**Description:**
+Enhance location sensor collection (beyond existing basic GPS). Add fused location provider integration with configurable accuracy tiers and battery-aware sampling rates.
+
+**Executor:**
+cthugha
+
+**Dependencies:**
+None
+
+**Status:**
+not_started — not yet implemented
+
+**Priority:**
+1
+
+**Blockers:**
+Decision required on whether to pursue Phase 1 or refactor Phase 2 to depend only on WiFi + BLE sensors currently available.
+
+**Success Criteria:**
+- [ ] FusedLocationProviderClient integration in a new collector class
+- [ ] Configurable accuracy tiers (high, medium, low)
+- [ ] Battery-aware sampling intervals
+
+---
+
+### Task ID: task-build-1.1.2-imu-sensors
+
+**Description:**
+Add IMU sensor collectors: Accelerometer, Gyroscope, RotationVector, and Gravity sensors via Android SensorManager.
+
+**Executor:**
+cthugha
+
+**Dependencies:**
+None
+
+**Status:**
+not_started — not yet implemented
+
+**Priority:**
+1
+
+**Blockers:**
+Same decision as 1.1.1 above.
+
+**Success Criteria:**
+- [ ] `ImuSensorCollector` class with SensorManager bindings
+- [ ] Data aggregated into a per-scan IMU summary struct
+- [ ] Missing-sensor graceful handling (not all devices expose all IMU axes)
+
+---
+
+### Task ID: task-build-1.1.3-cellular-bt
+
+**Description:**
+Add Cellular tower data collection (`CellTowerTracker`) and enhance Bluetooth beyond BLE scanning to include classic BT MAC discovery where available.
+
+**Executor:**
+cthugha
+
+**Dependencies:**
+None
+
+**Status:**
+not_started — not yet implemented
+
+**Priority:**
+1
+
+**Blockers:**
+Android 12+ restricts cell tower info access. Feasibility on Graphene OS needs verification.
+
+**Success Criteria:**
+- [ ] `CellTowerTracker` class collecting RSSI + CID data per tower
+- [ ] Classic BT discovery fallback when available
+- [ ] Permission handling for ACCESS_COARSE_LOCATION / ACCESS_FINE_LOCATION
+
+---
+
+### Task ID: task-build-1.1.4-environmental
+
+**Description:**
+Add environmental sensors: Light, Pressure, Temperature, Humidity via SensorManager.
+
+**Executor:**
+cthugha
+
+**Dependencies:**
+None
+
+**Status:**
+not_started — not yet implemented
+
+**Priority:**
+1
+
+**Blockers:**
+Many Android devices lack dedicated temperature or humidity sensors. Collector must gracefully skip missing hardware.
+
+**Success Criteria:**
+- [ ] `EnvironmentalSensorReader` class
+- [ ] Sensor presence detection before registration
+- [ ] Data piped into scan seed calculation alongside WiFi/BLE data
+
+---
+
 ## HIGH: Feature Extraction (Phase 2)
 
 ### Task ID: task-build-1.2.1-feature-extraction
