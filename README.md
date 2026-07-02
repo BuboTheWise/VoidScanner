@@ -86,7 +86,7 @@ For first-time development setup, refer to [INSTALL.md](INSTALL.md).
 
 **v1.1.08** (2026-05-28) — latest release with enhanced UI feedback, permission error handling, and export fixes for Graphene OS. See [release_notes_v1.1.08.md](release_notes_v1.1.08.md) for full details.
 
-Version history: v1.1.02 → v1.1.04 → v1.1.05 → v1.1.06 → v1.1.07 (fixes) → v1.1.08
+Version history: v1.1.02 → v1.1.04 → v1.1.05 → v1.1.06 → v1.1.07 (fixes) → v1.1.08 | Full versioning policy and tag conventions: [VERSIONING.md](VERSIONING.md)
 
 ## Project Structure
 
@@ -107,7 +107,10 @@ VoidScanner/
 ├── release_notes_*.md            # Per-release changelogs
 ├── TASKS.md                      # Development task backlog (Phases 1-3)
 ├── INSTALL.md                    # Build and deployment instructions
-└── FDROID_SETUP.md              # F-Droid configuration reference
+├── FDROID_SETUP.md              # F-Droid configuration reference
+├── VERSIONING.md                # Version policy, tag conventions, release history
+├── SECURITY.md                  # Data flow, permissions, threat model, disclosure
+└── _archive/                    # Archived session artifacts (non-canonical)
 ```
 
 ## Roadmap
