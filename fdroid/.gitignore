@@ -9,3 +9,6 @@ local.properties
 *.apk
 *.keystore
 *.log
+
+# Python virtual environment (not to be tracked)
+.venv/
