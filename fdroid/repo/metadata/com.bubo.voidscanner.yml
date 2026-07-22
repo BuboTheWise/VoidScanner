@@ -17,8 +17,6 @@ WebSite: https://github.com/BuboTheWise/VoidScanner
 IssueTracker: https://github.com/BuboTheWise/VoidScanner/issues
 
 AutoUpdateMode: None
-Build: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
-CI: https://github.com/BuboTheWise/VoidScanner/actions?query=is%3Aopen+is%3Apr
 
 Description: |
   The core scanner for the Nethervoid Network — explore the void between networked devices through comprehensive sensor analysis. Collects WiFi and Bluetooth signatures offline-first, generating deterministic seeds for game entity generation.
@@ -35,17 +33,5 @@ Description: |
 
   Package: com.bubo.voidscanner
 
-Source: https://github.com/BuboTheWise/VoidScanner
-
-Issue Tracker: https://github.com/BuboTheWise/VoidScanner/issues
-
-License: GPL-3.0
-
-ScanInfo: https://gitlab.com/fdroid.fdroid/blob/master/metadata/com.bubo.voidscanner.yml
-
-AutoUpdateMode: None
-UpdateCheckMode: None
-UpdateCheckData: VERSION_NAME|versionName|app/build.gradle|versionName\s*[=&lt;]+\s*"([\.\d]+)"|VERSION_CODE|versionCode|app/build.gradle|versionCode\s*[=&lt;]+\s*(\d+)
-
-Version: "1.0.28"
-VersionCode: "1028"
+Version: "1.2.00"
+VersionCode: "10200"
