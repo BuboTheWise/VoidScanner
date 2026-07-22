@@ -6,6 +6,5 @@ local.properties
 .cxx
 .idea/
 .DS_Store
-*.apk
 *.keystore
 *.log
