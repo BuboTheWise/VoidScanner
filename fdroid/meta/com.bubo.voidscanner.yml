@@ -1,0 +1,44 @@
+Package: com.bubo.voidscanner
+
+Categories:
+  - System
+  - Security
+  - Tools
+
+ContentRating:
+  - noAdultContent
+  - noDangerousContent
+  - noNonFreeDependency
+  - noP2P
+  - noTracking
+
+License: Apache-2.0
+Name: Void Scanner
+SourceCode: https://github.com/BuboTheWise/VoidScanner
+WebSite: https://github.com/BuboTheWise/VoidScanner
+IssueTracker: https://github.com/BuboTheWise/VoidScanner/issues
+
+Summary: Sensor data collection for Nethervoid Network void resonance analysis
+
+Description: |
+  The core scanner for the Nethervoid Network — explore the void between
+  networked devices through comprehensive sensor analysis. Collects WiFi
+  and Bluetooth signatures offline-first, generating deterministic seeds
+  for game entity generation.
+
+  Features:
+  - WiFi and BLE signal detection
+  - JSON export to Downloads folder
+  - Real-time scan feedback
+  - Privacy-aware data handling
+
+  Integration: Void Resonator component of Nethervoid Network, intended
+  for standalone testing and later integration into the full Nethervoid
+  application.
+
+  Requirements: Android 10+ (API 29+), no internet required
+
+AutoUpdateMode: None
+
+Version: 1.2.00
+VersionCode: 10200

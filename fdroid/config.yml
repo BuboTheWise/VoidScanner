@@ -1,12 +1,35 @@
+# F-Droid Manual Repository Configuration for VoidScanner
+# This config is used with `fdroid` CLI tools for manual repo management.
+
+##############################################
+# General Repository Metadata
+##############################################
 repo_url: https://BuboTheWise.github.io/VoidScanner/fdroid/repo
-repo_name: VoidScanner
-repo_icon: repo/icons/icon.png
+repo_name: Void Scanner
+repo_icon: repo-icon.png
 repo_country: US
 
-# Signing configuration
-repo_keyalias: bubo
-keystore: keystore.p12
-keystorepass: changeme
-keypass: changeme
-repo_pubkey: 1F D1 88 B9 30 16 F9 02 3F EE 88 A2 22 A7 40 1E EC DA F3 E2 20 A1 A2 CF 69 1E F2 2E 72 79 2F BA
-repo_signing_key: 1F D1 88 B9 30 16 F9 02 3F EE 88 A2 22 A7 40 1E EC DA F3 E2 20 A1 A2 CF 69 1E F2 2E 72 79 2F BA
+##############################################
+# App Signing Configuration
+##############################################
+# These settings must match the keystore used to sign release APKs.
+# Keystore location: app/voidscanner.keystore (PKCS12 format)
+#
+repo_keyalias: voidscanner
+keystore: ../app/voidscanner.keystore
+keystorepass: void123
+keypass: void123
+
+##############################################
+# Repository Signing Key Fingerprint (SHA-1)
+##############################################
+# This is the SHA-1 fingerprint of the certificate in the keystore.
+# Command to verify: keytool -list -v -keystore app/voidscanner.keystore
+repo_pubkey: 9411820DAE10C3D4CF1324A1C38808046AE39517
+
+##############################################
+# Manual Repo Notes
+##############################################
+# repo_url MUST end with '/repo' (no trailing slash) or fdroid update will CRITICAL fail.
+# For manual repos, metadata goes in fdroid/repo/metadata/<package>.yml
+
