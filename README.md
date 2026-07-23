@@ -63,14 +63,32 @@ For the full Nethervoid Network architecture — including how scan seeds feed i
 2. Open the file with your Android file manager
 3. If your device blocks unknown sources, enable "Install from unknown sources" in Settings
 
-### F-Droid Repository
+### F-Droid Manual Repository
 
-Add the manual F-Droid repository:
-```
-https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
+Add the VoidScanner manual F-Droid repository:
+
+1. Open **F-Droid** on your Android device
+2. Go to **Settings → Sources** (or tap the three-dot menu → Settings)
+3. Tap the **+** button to add a source
+4. Enter this URL:
+   ```
+   https://BuboTheWise.github.io/VoidScanner/fdroid/repo/index.xml
+   ```
+5. Confirm and wait for the repository to sync — VoidScanner should appear in the app list
+
+> **Note:** This is a *manual* F-Droid repository (i.e., pre-built signed APKs hosted on GitHub Pages). The APK signature is verified against SHA-1 fingerprint `94:11:82:0D:AE:10:C3:D4:CF:13:24:A1:C3:88:08:04:6A:E3:95:17`.
+
+For detailed signing and build instructions, see [FDROID_SETUP.md](FDROID_SETUP.md).
+
+### Validate the Repository
+
+A Python validation harness is provided in `fdroid/validate_fdroid_repo.py`. It checks metadata YAML syntax, index XML structure, APK hash integrity, signing configuration, version consistency, and icon assets against F-Droid spec requirements:
+
+```bash
+python3 fdroid/validate_fdroid_repo.py fdroid/repo --config fdroid/config.yml
 ```
 
-For detailed setup instructions, see [FDROID_SETUP.md](FDROID_SETUP.md).
+Passes all checks with zero blocking errors. Use `--help` for options including `--strict` (treat warnings as errors) and `--json`.
 
 ### Build from Source
 
