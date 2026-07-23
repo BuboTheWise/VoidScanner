@@ -1,6 +1,7 @@
 package com.bubo.voidscanner;
 
 import android.util.Log;
+import com.bubo.voidscanner.entities.Rarity;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;

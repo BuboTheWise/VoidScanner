@@ -33,11 +33,11 @@ android {
 
     defaultConfig {
         applicationId "com.bubo.voidscanner"
-        minSdk 26
+        minSdk 29
         targetSdk 34
 
-        // Version from gradle.properties
-        versionName "${getProperty('APP_VERSION_MAJOR')}.${getProperty('APP_VERSION_MINOR')}.${getProperty('APP_VERSION_PATCH')}"
+        // Version from gradle.properties (loaded as project properties automatically)
+        versionName "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"
 
         // Semantic version code calculation: (MAJOR * 10000) + (MINOR * 100) + PATCH
         // Ensures ordering and compatibility with Google Play
@@ -54,9 +54,9 @@ android {
 // Format: (MAJOR * 10000) + (MINOR * 100) + PATCH
 // Example: 1.01.00 → 10100, 1.02.05 → 10205, 2.00.99 → 20099
 def calculateSemanticVersionCode() {
-    def major = getProperty('APP_VERSION_MAJOR').toInteger()
-    def minor = getProperty('APP_VERSION_MINOR').toInteger()
-    def patch = getProperty('APP_VERSION_PATCH').toInteger()
+    def major = APP_VERSION_MAJOR.toInteger()
+    def minor = APP_VERSION_MINOR.toInteger()
+    def patch = APP_VERSION_PATCH.toInteger()
 
     return (major * 10000) + (minor * 100) + patch
 }
@@ -69,14 +69,11 @@ dependencies {
     // JSON export
     implementation "com.google.code.gson:gson:2.10.1"
     
-    // OkHttp for Google API calls
+    // OkHttp for Google API calls and HTTP requests
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
     
     // Google Play Services for Tasks (modern approach for Google API calls)
     implementation 'com.google.android.gms:play-services-tasks:18.0.2'
-    
-    // OkHttp for making HTTP requests to Google APIs
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
     
     // Unit testing
     testImplementation "junit:junit:4.13.2"
