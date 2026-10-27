@@ -1,17 +1,1 @@
-{
-  "commandLine": [
-    "/home/bubo/.hermes/workspace/Code/VoidScanner/fdroid/.venv/bin/fdroid update",
-    "--nosign"
-  ],
-  "stages": {
-    "delete_disabled_builds": 1780781768778,
-    "index.make repo": 1780781769353,
-    "prepare_apps repo": 1780781769353,
-    "process_apks": 1780781768778,
-    "read_added_date_from_all_apks": 1780781769352,
-    "remove_apks": 1780781769352,
-    "scan_repo_files": 1780781769352
-  },
-  "startTimestamp": 1780810568000,
-  "subcommand": "update"
-}
+{"antiFeatures":{},"apksigner":"apksigner","archivePolicy0":[],"commandLine":["fdroid update"],"disabled":[],"endTimestamp":1793087307217,"failedBuilds":{},"jarsigner":"jarsigner","keytool":"keytool","needsUpdate":["8d1a9166a264b53aa7cf11983d8641026ba57ca824d1296ff163d4ebab34c88f","com.bubo.voidscanner"],"noPackages":["8d1a9166a264b53aa7cf11983d8641026ba57ca824d1296ff163d4ebab34c88f","com.bubo.voidscanner"],"noUpdateCheck":["8d1a9166a264b53aa7cf11983d8641026ba57ca824d1296ff163d4ebab34c88f","com.bubo.voidscanner"],"stages":{"delete_disabled_builds":1793087304574,"index.make repo":1793087305423,"prepare_apps repo":1793087305422,"process_apks":1793087304574,"read_added_date_from_all_apks":1793087305422,"remove_apks":1793087305047,"scan_repo_files":1793087305046},"startTimestamp":1793116104000,"subcommand":"update"}

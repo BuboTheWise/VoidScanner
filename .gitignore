@@ -19,3 +19,10 @@ fdroid/data/
 fdroid/status/
 fdroid/tmp/
 fdroid/srclibs/
+
+# F-Droid manual repo: keep the delivered APK + its per-app signature tracked
+# so the GitHub Pages repo is complete and serves installable builds. These
+# negations must come AFTER the global *.apk rule above; they un-ignore only
+# the manual repo path, leaving local dev *.apk under app/build/ ignored.
+!fdroid/repo/*.apk
+!fdroid/repo/*.idsig
