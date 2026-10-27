@@ -90,11 +90,24 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "GitHub Actions"
-        git add fdroid/repo/metadata/
-        git add fdroid/repo/*.apk
-        git add fdroid/repo/index.xml
-        git diff --quiet && git diff --staged --quiet || git commit -m "F-Droid: Update APK and index"
-        git push origin main
+        # Force-add the entire served repo dir in one shot. *.apk is ignored by
+        # the root .gitignore for local dev builds, so we need -f (and/or the
+        # scoped !fdroid/repo/*.apk negation) to make the manual F-Droid repo's
+        # delivered artifacts (APK, .idsig, index-v1/v2.json, index jar, icons,
+        # metadata, diff deltas, status) all tracked — otherwise the committed
+        # tree diverges from what the GitHub Pages client actually fetches.
+        # Scoping to fdroid/repo/ (not fdroid/) keeps out fdroid/tmp + archive.
+        git add -f fdroid/repo/
+        # Idempotency guard: skip the commit entirely when nothing changed so
+        # re-runs of the workflow never produce empty "no changes" commits or a
+        # push with no new ref. `git status --porcelain` covers both staged and
+        # unstaged, so this is airtight.
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "F-Droid: Update APK and index"
+          git push origin HEAD:main
+        else
+          echo "No F-Droid repo changes to commit (idempotent)"
+        fi
 
   verify:
     needs: build-and-update
