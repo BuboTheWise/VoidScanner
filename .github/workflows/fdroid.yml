@@ -1,128 +1,88 @@
-# F-Droid Build and Update
+# F-Droid Manual Repository CI
+# Updates the manual repo when app/build.gradle or fdroid/ changes.
+# Requires: Pages deployment enabled in GitHub Settings → Pages (Source = Actions)
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
-    branches:
-      - main
+    branches: [main]
     paths:
-      - 'fdroid/**'
       - 'app/build.gradle'
+      - 'app/src/**'
       - 'gradle.properties'
-  # Allow manual trigger for testing
+      - 'fdroid/**'
+      - '.github/workflows/fdroid.yml'
   workflow_dispatch:
-    inputs:
-      app_version:
-        description: 'App version'
-        required: true
-        default: '1.1.06'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  ANDROID_HOME: ${{ github.workspace }}/Android/Sdk
+  KEYSTORE_FILE: ./app/voidscanner.keystore
+  KEY_ALIAS: "voidscanner"
+  # The keystore is already committed in app/voidscanner.keystore (PKCS12)
+  # If you ever need to regenerate it, see DEVSETUP.md
 
 jobs:
-  build-and-update:
+  update-repo:
+    name: Update F-Droid Repo
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-
+    container:
+      image: python:3.11-slim
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Python for fdroidserver
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
+      # --- 1. Install dependencies ---
+      - name: Install Java (for gradle + jarsigner verification)
+        run: |
+          apt-get update && apt-get install -y openjdk-17-jdk-headless git curl wget unzip
+          chmod +x gradlew
+      - name: Install fdroidserver
+        run: pip install fdroidserver
 
-    - name: Install fdroidserver
-      run: pip install fdroidserver
+      # --- 2. Build APK ---
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+        
+      - name: Show build output
+        run: ls - lah app/build/outputs/apk/debug/
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      # --- 3. Update F-Droid repo ---
+      - name: Update fdroid repo index
+        id: update
+        run: |
+          APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+          
+          # Copy new debug APK to repo with versioned name
+          VERSION_NAME=$(grep APP_VERSION_NAME gradle.properties | cut -d'=' -f2)
+          TARGET="void-scanner-${VERSION_NAME}-debug.apk"
+          cp "$APK_PATH" "fdroid/repo/$TARGET"
+          
+          # Verify the APK is valid
+          jarsigner -verify -verbose "$APK_PATH" 2>&1 | head -5
+          
+          echo "apk=$TARGET" >> $GITHUB_OUTPUT
+          chmod +x fdroid/validate_fdroid_repo.py
 
-    - name: Make gradlew executable
-      run: chmod +x gradlew
+      - name: Fix repo/index.xml with fdidx
+        run: |
+          cd fdroid/repo
+          # Add the new APK to the index (updates hash/sig)
+          python3 validate_fdroid_repo.py --fix-index 2>&1 || true
+          echo "Index after fix:"
+          head -30 index.xml
 
-    - name: Build release APK
-      run: ./gradlew assembleRelease
-
-    - name: Version info
-      id: version
-      run: |
-        APP_VERSION_NAME=$(grep 'APP_VERSION_NAME=' gradle.properties | cut -d'=' -f2)
-        APP_VERSION_CODE=$(grep 'APP_VERSION_CODE=' gradle.properties | cut -d'=' -f2)
-        echo "app_version=$APP_VERSION_NAME" >> $GITHUB_OUTPUT
-        echo "version_code=$APP_VERSION_CODE" >> $GITHUB_OUTPUT
-        echo "apk_name=void-scanner-$APP_VERSION_NAME.apk" >> $GITHUB_OUTPUT
-        echo "Version: $APP_VERSION_NAME ($APP_VERSION_CODE)"
-
-    - name: Copy APK to fdroid/repo (manual repo - no signing needed)
-      run: |
-        APK_NAME=${{ steps.version.outputs.apk_name }}
-        echo "Copying APK: $APK_NAME"
-        cp app/build/outputs/apk/release/app-release.apk fdroid/repo/$APK_NAME
-
-    # Note: No fdroid update needed - this is a manual repository served via GitHub Pages
-    # F-Droid client will auto-detect APK from repo URL
-
-    - name: Verify APK is in repo
-      run: |
-        echo "Contents of fdroid/repo:"
-        ls -lah fdroid/repo/*.apk || echo "No APK found in repo"
-
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: void-scanner-apk
-        path: fdroid/repo/*.apk
-        retention-days: 7
-
-    - name: Upload Pages artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: fdroid/repo
-
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "GitHub Actions"
-        # Force-add the entire served repo dir in one shot. *.apk is ignored by
-        # the root .gitignore for local dev builds, so we need -f (and/or the
-        # scoped !fdroid/repo/*.apk negation) to make the manual F-Droid repo's
-        # delivered artifacts (APK, .idsig, index-v1/v2.json, index jar, icons,
-        # metadata, diff deltas, status) all tracked — otherwise the committed
-        # tree diverges from what the GitHub Pages client actually fetches.
-        # Scoping to fdroid/repo/ (not fdroid/) keeps out fdroid/tmp + archive.
-        git add -f fdroid/repo/
-        # Idempotency guard: skip the commit entirely when nothing changed so
-        # re-runs of the workflow never produce empty "no changes" commits or a
-        # push with no new ref. `git status --porcelain` covers both staged and
-        # unstaged, so this is airtight.
-        if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "F-Droid: Update APK and index"
-          git push origin HEAD:main
-        else
-          echo "No F-Droid repo changes to commit (idempotent)"
-        fi
-
-  verify:
-    needs: build-and-update
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Verify repository is F-Droid compatible
-      run: |
-        echo "=== Repository Structure ==="
-        ls -lah fdroid/repo/
-        echo ""
-        echo "=== Metadata ==="
-        head -20 fdroid/repo/metadata/com.bubo.voidscanner.yml
-        echo ""
-        echo "=== APK Files ==="
-        find fdroid/repo -name "*.apk" -exec ls -lh {} \;
+      # --- 4. Deploy to GitHub Pages ---
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: fdroid/repo
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
