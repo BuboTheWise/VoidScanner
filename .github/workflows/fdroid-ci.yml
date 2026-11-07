@@ -101,15 +101,15 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: always()
         with:
-          tag_name: "v${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"
+          tag_name: "v${{ env.APP_VERSION_MAJOR }}.${{ env.APP_VERSION_MINOR }}.${{ env.APP_VERSION_PATCH }}"
           files: app/build/outputs/apk/release/*.apk
-          name: "VoidScanner v${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"
+          name: "VoidScanner v${{ env.APP_VERSION_MAJOR }}.${{ env.APP_VERSION_MINOR }}.${{ env.APP_VERSION_PATCH }}"
           body: |
             Signed release APK for VoidScanner.
 
             **Installation via ADB:**
             ```bash
-            adb install -r void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}.apk
+            adb install -r void-scanner-1.2.00.apk
             ```
 
             **Signed with project keystore.** SHA-256 available in repo metadata.
