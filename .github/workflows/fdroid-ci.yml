@@ -66,12 +66,12 @@ jobs:
           # Update the repo directory with the new APK
           mkdir -p fdroid/repo/metadata
           APK_NAME="void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}.apk"
-          cp "app/build/outputs/apk/release/app-release-*.apk" "fdroid/repo/${APK_NAME}"
+          cp "app/build/outputs/apk/release/app-release*.apk" "fdroid/repo/${APK_NAME}"
 
           # Compute SHA-256 hashes for F-Droid index
           cd fdroid
           pip install --quiet fdroidserver certtool pyopenssl 2>/dev/null || true
-          python3 repo/update_repo_index.py
+          python3 repo/update_repo_index.py --apk ../app/build/outputs/apk/release/app-release.apk
 
           # Push to deploy branch
           git add -A
