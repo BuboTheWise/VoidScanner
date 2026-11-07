@@ -87,7 +87,8 @@ jobs:
           fi
 
           mkdir -p fdroid/repo/metadata
-          APK_NAME="void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}-$(git rev-parse --short HEAD).apk"
+          APK_NAME="void-scanner-${APP_VERSION_NAME}.apk"
+          # (use the actual built name, e.g. void-scanner-1.2.00.apk, so it matches the repo index + release body)
           cp "$APK_FILE" "fdroid/repo/${APK_NAME}"
           echo "Deployed: ${APK_NAME} ($(du -h $APK_FILE | cut -f1))"
 
