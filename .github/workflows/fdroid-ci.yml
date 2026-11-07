@@ -21,8 +21,8 @@ jobs:
       - name: Install Android SDK tools
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
-          curl -sLO https://dl.google.com/android/repository/commandlinetools-linux-11765684_latest.zip
-          unzip -qo commandlinetools-linux-*-latest.zip
+          curl -fsSL -o commandlinetools-linux-latest.zip https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip
+          unzip -qo commandlinetools-linux-latest.zip
           mv cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
       - name: Set SDK env vars
