@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace "com.bubo.voidscanner"
-    compileSdk 34
+    compileSdk 35
 
     signingConfigs {
         release {
@@ -34,7 +34,7 @@ android {
     defaultConfig {
         applicationId "com.bubo.voidscanner"
         minSdk 29
-        targetSdk 34
+        targetSdk 35
 
         // Version from gradle.properties (loaded as project properties automatically)
         versionName "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"

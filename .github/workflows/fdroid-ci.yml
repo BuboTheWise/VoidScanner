@@ -15,7 +15,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
 
       - name: Install Android SDK tools
@@ -43,17 +43,29 @@ jobs:
         run: |
           while IFS='=' read -r key val; do echo "$key=$val" >> $GITHUB_ENV; done < gradle.properties
 
-      - name: Build release APK (signed with project keystore)
+      - name: Build signed APK and AAB  
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew bundleRelease assembleRelease --info 2>&1 | tail -50
+
+      - name: Debug build outputs
+        if: always()
+        run: |
+          echo "=== APK files ==="
+          ls -lh app/build/outputs/apk/release/ 2>/dev/null || echo "(apk dir not found)"
+          echo "=== AAB files ==="
+          ls -lh app/build/outputs/bundle/release/ 2>/dev/null || echo "(bundle dir not found)"
+          echo "=== Gradle output dir tree ==="
+          find app/build/outputs -type f -name '*.apk' -o -name '*.aab' 2>/dev/null | head
 
       - name: Upload signed APK as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: voidscanner-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: |
+            app/build/outputs/apk/release/**/*.apk
+            app/build/outputs/bundle/release/**/*.aab
           retention-days: 5
 
       - name: Deploy to F-Droid manual repo (GitHub Pages)
@@ -63,19 +75,26 @@ jobs:
             git remote add fdroid-page https://${{ secrets.BUBO_DEPLOY_KEY }}@github.com/BuboTheWise/VoidScanner.git
           fi
 
-          # Update the repo directory with the new APK
-          mkdir -p fdroid/repo/metadata
-          APK_NAME="void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}.apk"
-          cp "app/build/outputs/apk/release/app-release*.apk" "fdroid/repo/${APK_NAME}"
+          # Find any APK from the build outputs (handles different naming)
+          APK_FILE=""
+          for f in app/build/outputs/apk/release/*.apk; do
+            if [ -f "$f" ]; then APK_FILE="$f"; break; fi
+          done
+          if [ -z "$APK_FILE" ]; then
+            echo "ERROR: No APK found in regular output path! Listing all files..."
+            find app/build/outputs -name '*.apk' 2>/dev/null | head
+            exit 1
+          fi
 
-          # Compute SHA-256 hashes for F-Droid index
-          cd fdroid
-          pip install --quiet fdroidserver certtool pyopenssl 2>/dev/null || true
-          python3 repo/update_repo_index.py --apk ../app/build/outputs/apk/release/app-release.apk
+          mkdir -p fdroid/repo/metadata
+          APK_NAME="void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}-$(git rev-parse --short HEAD).apk"
+          cp "$APK_FILE" "fdroid/repo/${APK_NAME}"
+          echo "Deployed: ${APK_NAME} ($(du -h $APK_FILE | cut -f1))"
 
           # Push to deploy branch
+          cd fdroid
           git add -A
-          git commit -m "Deploy: release APK ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}" 2>/dev/null || true
+          git commit -m "Deploy: release APK ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}" --allow-empty 2>/dev/null || true
           git push fdroid-page main --force
 
       - name: Create GitHub Release with signed APK
