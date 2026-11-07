@@ -15,26 +15,40 @@ fi
 
 cd "$REPO_ROOT"
 
-APK_DIR="app/build/outputs/apk/debug/app-debug.apk"
-APK_NAME=""
-VERSION="$(grep APP_VERSION_NAME gradle.properties | cut -d'=' -f2)"
-BUILD_TYPE="debug"
+# Defaults to release build (appropriate for F-Droid manual repo)
+BUILD_TYPE="release"
+BUILD_ARGS=""
 DEST_DIR="fdroid/repo"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) VERSION="$2"; shift 2 ;;
-    --release) BUILD_TYPE="release"; APK_DIR="app/build/outputs/apk/release/app-release-unsigned.apk"; shift ;;
-    --debug)   BUILD_TYPE="debug"; APK_DIR="app/build/outputs/apk/debug/app-debug.apk"; shift ;;
+    --release) BUILD_TYPE="release"; shift ;;
+    --debug)   BUILD_TYPE="debug"; shift ;;
+    --build-args) BUILD_ARGS="$2"; shift 2 ;;
     *) echo "Unknown arg: $1"; exit 1 ;;
   esac
 done
 
-APK_NAME="void-scanner-${VERSION}-${BUILD_TYPE}.apk"
-APK_PATH="$APK_DIR"
+# Derive version from gradle.properties if not provided
+if [[ -z "$VERSION" ]]; then
+  MAJOR="$(grep APP_VERSION_MAJOR gradle.properties | cut -d'=' -f2)"
+  MINOR="$(grep APP_VERSION_MINOR gradle.properties | cut -d'=' -f2)"
+  PATCH="$(grep APP_VERSION_PATCH gradle.properties | cut -d'=' -f2)"
+  VERSION="${MAJOR}.${MINOR}.${PATCH}"
+fi
 
-# Validate APK exists
-if [[ ! -f "$APK_PATH" ]]; then
+# Determine APK path based on build type
+if [[ "$BUILD_TYPE" == "release" ]]; then
+  APK_PATH="app/build/outputs/apk/release/app-release-*.apk"
+else
+  APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+fi
+APK_NAME="void-scanner-${VERSION}-${BUILD_TYPE}.apk"
+
+# Find actual APK file (may use glob)
+ACTUAL_APK=$(ls "$APK_PATH" 2>/dev/null | head -1)
+if [[ ! -f "$ACTUAL_APK" ]]; then
   echo "No APK found at $APK_PATH. Run './gradlew assemble${BUILD_TYPE}' first." >&2
   exit 1
 fi
@@ -42,12 +56,18 @@ fi
 cd fdroid/repo
 
 # Copy APK + verify
-cp ../../"$APK_PATH" "$APK_NAME"
+cp -- "$ACTUAL_APK" "$APK_NAME"
 echo "Added: $APK_NAME ($(du -h "$APK_NAME" | cut -f1))"
 
-# Validate
+# Update repo index (hash, size, version) in index.xml, index-v2.json, metadata YAML
+REPO_ROOT="${PWD}"
+cd "$REPO_ROOT/../.."  # back to VoidScanner/ root
+python3 fdroid/repo/update_repo_index.py --apk "fdroid/repo/$APK_NAME"
+
+# Validate before committing
+echo ""
 if python3 ../validate_fdroid_repo.py; then
-  echo "Validation passed ✓"
+  echo "Repo validation passed ✓"
 else
   echo "WARNING: Validation failed — fix before committing! ✗" >&2
 fi

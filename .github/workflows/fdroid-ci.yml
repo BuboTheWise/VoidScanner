@@ -1,0 +1,96 @@
+name: Build & Deploy Signed APK
+on:
+  push: { branches: [main], paths-ignore: ["*.md", "**/README*"] }
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Install Android SDK tools
+        run: |
+          mkdir -p android-sdk/cmdline-tools
+          curl -sLO https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -qo commandlinetools-linux-*zip -d android-sdk/cmdline-tools
+          mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
+
+      - name: Set SDK env vars
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+
+      - name: Accept licenses + install platforms
+        run: |
+          sdkmanager --licenses --agree-all 2>/dev/null || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Configure local.properties for CI
+        run: echo 'sdk.dir=$HOME/android-sdk' > local.properties
+
+      - name: Load version from Gradle properties
+        run: |
+          while IFS='=' read -r key val; do echo "$key=$val" >> $GITHUB_ENV; done < gradle.properties
+
+      - name: Build release APK (signed with project keystore)
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Upload signed APK as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voidscanner-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 5
+
+      - name: Deploy to F-Droid manual repo (GitHub Pages)
+        run: |
+          # Clone deploy user's fork remote as 'fdroid-page' if not present
+          if ! git remote get-url fdroid-page >/dev/null 2>&1; then
+            git remote add fdroid-page https://${{ secrets.BUBO_DEPLOY_KEY }}@github.com/BuboTheWise/VoidScanner.git
+          fi
+
+          # Update the repo directory with the new APK
+          mkdir -p fdroid/repo/metadata
+          APK_NAME="void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}.apk"
+          cp "app/build/outputs/apk/release/app-release-*.apk" "fdroid/repo/${APK_NAME}"
+
+          # Compute SHA-256 hashes for F-Droid index
+          cd fdroid
+          pip install --quiet fdroidserver certtool pyopenssl 2>/dev/null || true
+          python3 repo/update_repo_index.py
+
+          # Push to deploy branch
+          git add -A
+          git commit -m "Deploy: release APK ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}" 2>/dev/null || true
+          git push fdroid-page main --force
+
+      - name: Create GitHub Release with signed APK
+        uses: softprops/action-gh-release@v1
+        if: always()
+        with:
+          tag_name: "v${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"
+          files: app/build/outputs/apk/release/*.apk
+          name: "VoidScanner v${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}"
+          body: |
+            Signed release APK for VoidScanner.
+
+            **Installation via ADB:**
+            ```bash
+            adb install -r void-scanner-${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}.apk
+            ```
+
+            **Signed with project keystore.** SHA-256 available in repo metadata.
