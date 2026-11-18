@@ -1,0 +1,116 @@
+name: Build & Deploy Signed APK
+on:
+  push: { branches: [main], paths-ignore: ["*.md", "**/README*"] }
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Install Android SDK tools
+        run: |
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          curl -fsSL -o commandlinetools-linux-latest.zip https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip
+          unzip -qo commandlinetools-linux-latest.zip
+          mv cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+
+      - name: Set SDK env vars
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+
+      - name: Accept licenses + install platforms
+        run: |
+          yes | sdkmanager --licenses 2>/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "cmdline-tools;latest" "platform-tools"
+
+      - name: Configure local.properties for CI
+        run: echo 'sdk.dir=$HOME/android-sdk' > local.properties
+
+      - name: Load version from Gradle properties
+        run: |
+          while IFS='=' read -r key val; do echo "$key=$val" >> $GITHUB_ENV; done < gradle.properties
+
+      - name: Build signed APK and AAB  
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease assembleRelease --info 2>&1 | tail -50
+
+      - name: Debug build outputs
+        if: always()
+        run: |
+          echo "=== APK files ==="
+          ls -lh app/build/outputs/apk/release/ 2>/dev/null || echo "(apk dir not found)"
+          echo "=== AAB files ==="
+          ls -lh app/build/outputs/bundle/release/ 2>/dev/null || echo "(bundle dir not found)"
+          echo "=== Gradle output dir tree ==="
+          find app/build/outputs -type f -name '*.apk' -o -name '*.aab' 2>/dev/null | head
+
+      - name: Upload signed APK as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voidscanner-release-apk
+          path: |
+            app/build/outputs/apk/release/**/*.apk
+            app/build/outputs/bundle/release/**/*.aab
+          retention-days: 5
+
+      - name: Deploy to F-Droid manual repo (GitHub Pages)
+        run: |
+          # Clone deploy user's fork remote as 'fdroid-page' if not present
+          if ! git remote get-url fdroid-page >/dev/null 2>&1; then
+            git remote add fdroid-page https://${{ secrets.BUBO_DEPLOY_KEY }}@github.com/BuboTheWise/VoidScanner.git
+          fi
+
+          # Find any APK from the build outputs (handles different naming)
+          APK_FILE=""
+          for f in app/build/outputs/apk/release/*.apk; do
+            if [ -f "$f" ]; then APK_FILE="$f"; break; fi
+          done
+          if [ -z "$APK_FILE" ]; then
+            echo "ERROR: No APK found in regular output path! Listing all files..."
+            find app/build/outputs -name '*.apk' 2>/dev/null | head
+            exit 1
+          fi
+
+          mkdir -p fdroid/repo/metadata
+          APK_NAME="void-scanner-${APP_VERSION_NAME}.apk"
+          # (use the actual built name, e.g. void-scanner-1.2.00.apk, so it matches the repo index + release body)
+          cp "$APK_FILE" "fdroid/repo/${APK_NAME}"
+          echo "Deployed: ${APK_NAME} ($(du -h $APK_FILE | cut -f1))"
+
+          # Push to deploy branch
+          cd fdroid
+          git add -A
+          git commit -m "Deploy: release APK ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}" --allow-empty 2>/dev/null || true
+          git push fdroid-page main --force
+
+      - name: Create GitHub Release with signed APK
+        uses: softprops/action-gh-release@v1
+        if: always()
+        with:
+          tag_name: "v${{ env.APP_VERSION_MAJOR }}.${{ env.APP_VERSION_MINOR }}.${{ env.APP_VERSION_PATCH }}"
+          files: app/build/outputs/apk/release/*.apk
+          name: "VoidScanner v${{ env.APP_VERSION_MAJOR }}.${{ env.APP_VERSION_MINOR }}.${{ env.APP_VERSION_PATCH }}"
+          body: |
+            Signed release APK for VoidScanner.
+
+            **Installation via ADB:**
+            ```bash
+            adb install -r void-scanner-1.2.00.apk
+            ```
+
+            **Signed with project keystore.** SHA-256 available in repo metadata.
