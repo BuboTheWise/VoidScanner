@@ -1,0 +1,105 @@
+# F-Droid Manual Repository CI
+# Builds and pushes APKs to GitHub Pages-hosted F-Droid manual repo
+# Requires: Pages deployment enabled in GitHub Settings -> Pages (Source = Actions)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/build.gradle'
+      - 'app/src/**'
+      - 'gradle.properties'
+      - 'fdroid/**'
+      - '.github/workflows/fdroid.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  ANDROID_HOME: ${{ github.workspace }}/Android/Sdk
+  JAVA_HOME: ${{ github.workspace }}/jdk
+  KEYSTORE_FILE: ./app/voidscanner.keystore
+  KEY_ALIAS: "voidscanner"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy F-Droid Repo
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- 1. Setup JDK 17 (required for AGP build) ---
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # --- 2. Cache Gradle dependencies ---
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # --- 3. Download Android SDK (for build) ---
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 9477386
+          packages: "platforms;android-35,build-tools;35.0.0"
+
+      # --- 4. Build APKs ---
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon
+        
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease --no-daemon
+        
+      - name: List outputs
+        run: |
+          echo "=== Debug APK ==="
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
+          echo "=== Release APK ==="  
+          ls -lh app/build/outputs/apk/release/app-release.apk
+
+      # --- 5. Install fdroidserver for repo management ---
+      - name: Install fdroidserver
+        run: pip install --upgrade fdroidserver
+
+      # --- 6. Update F-Droid repo index with both APKs ---
+      - name: Update F-Droid repo
+        run: |
+          VERSION_NAME=$(grep APP_VERSION_NAME gradle.properties | cut -d'=' -f2)
+          
+          echo "=== Adding debug APK ==="
+          fdroid update -a app/build/outputs/apk/debug/app-debug.apk --source-dir .
+          cp app/build/outputs/apk/debug/app-debug.apk fdroid/repo/void-scanner-${VERSION_NAME}-debug.apk
+          
+          echo "=== Adding release APK ==="
+          fdroid update -a app/build/outputs/apk/release/app-release.apk --source-dir .
+          cp app/build/outputs/apk/release/app-release.apk fdroid/repo/void-scanner-${VERSION_NAME}-release.apk
+          
+          # Update repo index in place
+          cd fdroid/repo
+          fdroid update -w .. --signindex=false || true
+          
+      # --- 7. Deploy to GitHub Pages ===
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: fdroid/repo
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

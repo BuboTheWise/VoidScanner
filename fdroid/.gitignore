@@ -1,0 +1,13 @@
+# .gitignore for fdroid/repo
+.gradle
+local.properties
+*.iml
+.gradle
+.cxx
+.idea/
+.DS_Store
+*.keystore
+*.log
+
+# Python virtual environment (not to be tracked)
+.venv/
