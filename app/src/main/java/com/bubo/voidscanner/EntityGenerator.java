@@ -71,7 +71,7 @@ public class EntityGenerator {
             KNOWN_OUIS.add(oui);
         }
     }
-
+    
     /**
      * ScanFeatures - Container for sensor data used in entity generation
      */
@@ -92,7 +92,7 @@ public class EntityGenerator {
             unknownOuis = new ArrayList<>();
         }
     }
-
+    
     /**
      * Generate entities from scan data with deterministic OUI bias mapping and signal strength-based rarity
      * @param scanId Unique identifier for this scan
@@ -333,4 +333,76 @@ public class EntityGenerator {
         String[] texts = flavorMap.get(rarity);
         return texts[new Random().nextInt(texts.length)];
     }
+    
+    /**
+     * Extract scan features for EntityGenerator.generateFromScan()
+     * Integrate Bluetooth/WiFi/IMU data metrics
+     */
+    public static ScanFeatures extractScanFeatures(List<String> scanResults) {
+        ScanFeatures features = new ScanFeatures();
+
+        Random random = new Random();
+
+        // Bluetooth (Human density)
+        int bluetoothCount = 0;
+        int strongBluetooth = 0;
+        for (String result : scanResults) {
+            if (result.contains("Bluetooth device")) {
+                bluetoothCount++;
+                // Extract signal strength for strong Bluetooth detection
+                String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
+                Double signal = Double.parseDouble(extracted.split(" ")[0].replace("/", ""));
+                if (signal > 50) {
+                    strongBluetooth++;
+                }
+                
+                // Try to extract OUI from the result for vendor bias
+                if (result.contains("OUI:")) {
+                    String oui = result.substring(result.lastIndexOf("OUI:") + 4).trim();
+                    if (isKnownOui(oui)) {
+                        features.unknownOuis.add(oui);
+                    }
+                }
+            }
+        }
+        features.humanDensity = bluetoothCount;
+        features.proximity = strongBluetooth;
+
+        // IoT Presence (Known OUIs from OUIDatabase)
+        int iotCount = 0;
+        Map<String, Integer> ouiCounts = new HashMap<>();
+        for (String result : scanResults) {
+            if (result.contains("Found WiFi network") || result.contains("Found Bluetooth device")) {
+                // Try to extract OUI
+                String oui = null;
+                if (result.contains("OUI: ")) {
+                    oui = result.substring(result.lastIndexOf("OUI: ") + 5).trim();
+                }
+                
+                if (oui != null) {
+                    if (isKnownOui(oui)) {
+                        iotCount++;
+                        ouiCounts.put(oui, ouiCounts.getOrDefault(oui, 0) + 1);
+                    } else {
+                        features.unknownOuis.add(oui);
+                    }
+                }
+            }
+        }
+        features.iotPresence = iotCount;
+
+        // WiFi Chaos & Tech Level
+        features.wifiRssiAvg = 45 + random.nextInt(30);  // Average 45-75 dBm
+        features.signalChaos = scanResults.stream().filter(r -> r.contains("Found")).mapToInt(r -> random.nextInt(20) + 10).sum();
+        features.techLevel = random.nextInt(100);
+
+        // Environmental & Movement
+        features.movement = 1.5 + random.nextDouble() * 3.0;
+        features.environment = random.nextInt(1000);
+        features.direction = random.nextBoolean() ? "OUTDOOR" : "INDOOR";
+        features.beaconCount = random.nextInt(5);
+
+        return features;
+    }
+
 }

@@ -16,9 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.bubo.voidscanner.entities.Entity;
 import com.bubo.voidscanner.entities.Rarity;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -170,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             // Generate entities using EntityGenerator with Bluetooth/WiFi/IMU integration
             List<DiscoveredEntity> entities = EntityGenerator.generateFromScan(
                     String.valueOf(System.currentTimeMillis()),
-                    extractScanFeatures(scanResults)
+                    EntityGenerator.extractScanFeatures(scanResults)
             );
 
             if (!entities.isEmpty()) {
@@ -182,77 +180,6 @@ public class MainActivity extends AppCompatActivity {
             statusTextView.setText("Scan complete");
             isScanning = false;
         }, 2000);
-    }
-
-    /**
-     * Extract scan features for EntityGenerator.generateFromScan()
-     * Integrate Bluetooth/WiFi/IMU data metrics
-     */
-    private EntityGenerator.ScanFeatures extractScanFeatures(List<String> scanResults) {
-        EntityGenerator.ScanFeatures features = new EntityGenerator.ScanFeatures();
-
-        Random random = new Random();
-
-        // Bluetooth (Human density)
-        int bluetoothCount = 0;
-        int strongBluetooth = 0;
-        for (String result : scanResults) {
-            if (result.contains("Bluetooth device")) {
-                bluetoothCount++;
-                // Extract signal strength for strong Bluetooth detection
-                String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
-                Double signal = Double.parseDouble(extracted.split(" ")[0].replace("/", ""));
-                if (signal > 50) {
-                    strongBluetooth++;
-                }
-                
-                // Try to extract OUI from the result for vendor bias
-                if (result.contains("OUI:")) {
-                    String oui = result.substring(result.lastIndexOf("OUI:") + 4).trim();
-                    if (EntityGenerator.isKnownOui(oui)) {
-                        features.unknownOuis.add(oui);
-                    }
-                }
-            }
-        }
-        features.humanDensity = bluetoothCount;
-        features.proximity = strongBluetooth;
-
-        // IoT Presence (Known OUIs from OUIDatabase)
-        int iotCount = 0;
-        Map<String, Integer> ouiCounts = new HashMap<>();
-        for (String result : scanResults) {
-            if (result.contains("Found WiFi network") || result.contains("Found Bluetooth device")) {
-                // Try to extract OUI
-                String oui = null;
-                if (result.contains("OUI: ")) {
-                    oui = result.substring(result.lastIndexOf("OUI: ") + 5).trim();
-                }
-                
-                if (oui != null) {
-                    if (EntityGenerator.isKnownOui(oui)) {
-                        iotCount++;
-                        ouiCounts.put(oui, ouiCounts.getOrDefault(oui, 0) + 1);
-                    } else {
-                        features.unknownOuis.add(oui);
-                    }
-                }
-            }
-        }
-        features.iotPresence = iotCount;
-
-        // WiFi Chaos & Tech Level
-        features.wifiRssiAvg = 45 + random.nextInt(30);  // Average 45-75 dBm
-        features.signalChaos = scanResults.stream().filter(r -> r.contains("Found")).mapToInt(r -> random.nextInt(20) + 10).sum();
-        features.techLevel = random.nextInt(100);
-
-        // Environmental & Movement
-        features.movement = 1.5 + random.nextDouble() * 3.0;
-        features.environment = random.nextInt(1000);
-        features.direction = random.nextBoolean() ? "OUTDOOR" : "INDOOR";
-        features.beaconCount = random.nextInt(5);
-
-        return features;
     }
 
     private void displayEntities(List<DiscoveredEntity> entities) {

@@ -55,4 +55,21 @@ public class EntityGeneratorTest {
         assertNotNull("Rarity determination should work", 
                      EntityGenerator.determineRarityBySignal(features, random));
     }
+
+    @Test
+    public void testExtractScanFeaturesParsesBluetoothSignal() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Found Bluetooth device 1 (Signal: 65/100, OUI: 00:1A:A0)");
+        EntityGenerator.ScanFeatures features = EntityGenerator.extractScanFeatures(lines);
+        assertEquals("one bluetooth device counted", 1, features.humanDensity);
+        assertEquals("signal 65 > 50 should count as proximity", 1, features.proximity);
+    }
+
+    @Test
+    public void testExtractScanFeaturesKnownWifiOui() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Found WiFi network 1 (Signal: 80/100, OUI: 00:17:88)");
+        EntityGenerator.ScanFeatures features = EntityGenerator.extractScanFeatures(lines);
+        assertTrue("known Philips Hue OUI should count as IoT presence", features.iotPresence >= 1);
+    }
 }
