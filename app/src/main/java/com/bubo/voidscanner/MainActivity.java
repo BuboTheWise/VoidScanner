@@ -24,11 +24,14 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_LOCATION = 1;
     private static final int REQUEST_CODE_BLUETOOTH = 2;
 
+    // Flip to true to use the real WifiScout/BluetoothScanner results.
+    // Keep false for emulator / CI where there is no real radio.
+    private static final boolean USE_REAL_SCANNERS = false;
+
     private TextView statusTextView;
     private TextView resultsTextView;
     private boolean locationPermissionGranted = false;
     private boolean bluetoothPermissionGranted = false;
-    private List<String> scanResults = new ArrayList<>();
     private boolean isScanning = false;
 
     @Override
@@ -121,65 +124,58 @@ public class MainActivity extends AppCompatActivity {
         statusTextView.setText("Scanning...");
         resultsTextView.setText("");
 
-        // Simulate scanning process
         final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            scanResults.clear();
-            
-            // Add more realistic simulated scan results for both WiFi and Bluetooth
-            scanResults.add("Scanning WiFi networks...");
-            scanResults.add("Scanning Bluetooth devices...");
-            
-            // Simulate some real scan results with proper signal strengths and OUIs
-            Random random = new Random();
-            
-            // Add some WiFi networks with OUIs  
-            for (int i = 0; i < 3; i++) {
-                String oui = String.format("%02X:%02X:%02X", 
-                        random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                
-                // Include some known OUIs for demonstration
-                if (i == 0 && random.nextBoolean()) {
-                    oui = "00:17:88"; // Philips Hue
-                } else if (i == 1 && random.nextBoolean()) {
-                    oui = "00:1A:A0"; // Arlo
+        handler.postDelayed(() -> new Thread(() -> {
+            List<String> lines = new ArrayList<>();
+            if (USE_REAL_SCANNERS) {
+                lines.addAll(new WifiScout(this).scan());
+                lines.addAll(new BluetoothScanner(this).scan());
+                Log.i(TAG, "Real scan collected " + lines.size() + " lines");
+            } else {
+                // Simulated scan (default): same data as before, now in a local list
+                lines.add("Scanning WiFi networks...");
+                lines.add("Scanning Bluetooth devices...");
+                Random random = new Random();
+                for (int i = 0; i < 3; i++) {
+                    String oui = String.format("%02X:%02X:%02X",
+                            random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                    if (i == 0 && random.nextBoolean()) {
+                        oui = "00:17:88"; // Philips Hue
+                    } else if (i == 1 && random.nextBoolean()) {
+                        oui = "00:1A:A0"; // Arlo
+                    }
+                    String signalStrength = String.format("%d", 50 + random.nextInt(50));
+                    lines.add(String.format("Found WiFi network %s (Signal: %s/100, OUI: %s)",
+                            i + 1, signalStrength, oui));
                 }
-                
-                String signalStrength = String.format("%d", 50 + random.nextInt(50));
-                scanResults.add(String.format("Found WiFi network %s (Signal: %s/100, OUI: %s)", 
-                        i+1, signalStrength, oui));
+                for (int i = 0; i < 2; i++) {
+                    String oui = String.format("%02X:%02X:%02X",
+                            random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                    if (i == 0 && random.nextBoolean()) {
+                        oui = "00:1A:A0"; // Arlo
+                    }
+                    String signalStrength = String.format("%d", 60 + random.nextInt(40));
+                    lines.add(String.format("Found Bluetooth device %s (Signal: %s/100, OUI: %s)",
+                            i + 1, signalStrength, oui));
+                }
+                Log.i(TAG, "Simulated scan collected " + lines.size() + " lines");
             }
 
-            // Add some Bluetooth devices with OUIs
-            for (int i = 0; i < 2; i++) {
-                String oui = String.format("%02X:%02X:%02X", 
-                        random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                
-                // Include some known OUIs for demonstration
-                if (i == 0 && random.nextBoolean()) {
-                    oui = "00:1A:A0"; // Arlo
-                }
-                
-                String signalStrength = String.format("%d", 60 + random.nextInt(40));
-                scanResults.add(String.format("Found Bluetooth device %s (Signal: %s/100, OUI: %s)", 
-                        i+1, signalStrength, oui));
-            }
-
-            // Generate entities using EntityGenerator with Bluetooth/WiFi/IMU integration
-            List<DiscoveredEntity> entities = EntityGenerator.generateFromScan(
+            final List<DiscoveredEntity> entities = EntityGenerator.generateFromScan(
                     String.valueOf(System.currentTimeMillis()),
-                    EntityGenerator.extractScanFeatures(scanResults)
+                    EntityGenerator.extractScanFeatures(lines)
             );
 
-            if (!entities.isEmpty()) {
-                displayEntities(entities);
-            } else {
-                resultsTextView.append("No entities discovered. Keep scanning!\n");
-            }
-
-            statusTextView.setText("Scan complete");
-            isScanning = false;
-        }, 2000);
+            handler.post(() -> {
+                if (!entities.isEmpty()) {
+                    displayEntities(entities);
+                } else {
+                    resultsTextView.append("No entities discovered. Keep scanning!\n");
+                }
+                statusTextView.setText("Scan complete");
+                isScanning = false;
+            });
+        }).start(), 500);
     }
 
     private void displayEntities(List<DiscoveredEntity> entities) {
