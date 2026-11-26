@@ -60,10 +60,31 @@ public class WifiScout {
             return scanResults;
         }
 
-        // Get scan results asynchronously via BroadcastReceiver in MainActivity
-        // For now, return empty and let MainActivity handle callbacks
-        scanResults.add("WiFi: Would retrieve results now (requires BroadcastReceiver)");
-        
+        // Poll for actual scan results (up to ~8s)
+        List<ScanResult> wifiScanResults = null;
+        for (int i = 0; i < 8; i++) {
+            wifiScanResults = wifiManager.getScanResults();
+            if (wifiScanResults != null && !wifiScanResults.isEmpty()) break;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+                break;
+            }
+        }
+
+        if (wifiScanResults == null || wifiScanResults.isEmpty()) {
+            scanResults.add("No WiFi networks found");
+            return scanResults;
+        }
+
+        for (ScanResult sr : wifiScanResults) {
+            String ssid = sr.SSID;
+            if (ssid == null || ssid.isEmpty()) ssid = "<hidden>";
+            int strength = Math.max(0, Math.min(100, sr.level + 100)); // RSSI -100..0 dBm -> 0..100 scale
+            String oui = (sr.BSSID != null && sr.BSSID.length() >= 8) ? sr.BSSID.substring(0, 8).toUpperCase() : "UNKNOWN";
+            scanResults.add(String.format("Found WiFi network %s (Signal: %d/100, OUI: %s)", ssid, strength, oui));
+        }
+
         return scanResults;
     }
 
