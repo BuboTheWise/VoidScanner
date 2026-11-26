@@ -351,14 +351,14 @@ public class EntityGenerator {
                 bluetoothCount++;
                 // Extract signal strength for strong Bluetooth detection
                 String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
-                Double signal = Double.parseDouble(extracted.split(" ")[0].replace("/", ""));
+                int signal = Integer.parseInt(extracted.split(" ")[0].trim().split("/")[0].trim());
                 if (signal > 50) {
                     strongBluetooth++;
                 }
                 
                 // Try to extract OUI from the result for vendor bias
                 if (result.contains("OUI:")) {
-                    String oui = result.substring(result.lastIndexOf("OUI:") + 4).trim();
+                    String oui = result.substring(result.lastIndexOf("OUI:") + 4).split("[^0-9A-Fa-f:]")[0].trim();
                     if (isKnownOui(oui)) {
                         features.unknownOuis.add(oui);
                     }
@@ -376,7 +376,7 @@ public class EntityGenerator {
                 // Try to extract OUI
                 String oui = null;
                 if (result.contains("OUI: ")) {
-                    oui = result.substring(result.lastIndexOf("OUI: ") + 5).trim();
+                    oui = result.substring(result.lastIndexOf("OUI: ") + 5).split("[^0-9A-Fa-f:]")[0].trim();
                 }
                 
                 if (oui != null) {
