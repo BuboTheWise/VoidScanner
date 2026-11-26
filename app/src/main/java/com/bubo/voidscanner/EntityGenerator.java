@@ -210,7 +210,7 @@ public class EntityGenerator {
     }
     
     // Determine entity rarity based on signal strength and environmental factors
-    private static Rarity determineRarityBySignal(ScanFeatures features, Random random) {
+    public static Rarity determineRarityBySignal(ScanFeatures features, Random random) {
         // If we have a lot of strong signals or high tech levels, entities are more rare
         double signalStrength = (features.proximity + features.humanDensity + 
                                 (features.wifiRssiAvg / 10.0)) / 3.0;
@@ -254,7 +254,7 @@ public class EntityGenerator {
     }
     
     // Generate random OUI for mock data
-    private static String generateRandomOui(Random random) {
+    public static String generateRandomOui(Random random) {
         StringBuilder oui = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             if (i > 0) oui.append(":");
