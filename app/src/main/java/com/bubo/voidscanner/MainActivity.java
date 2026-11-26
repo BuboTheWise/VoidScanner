@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -30,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView statusTextView;
     private TextView resultsTextView;
+    private Button startScanButton;
+    private Button stopScanButton;
+    private Button exportButton;
+    private Button exportToSheetsButton;
     private boolean locationPermissionGranted = false;
     private boolean bluetoothPermissionGranted = false;
     private boolean isScanning = false;
@@ -41,6 +46,33 @@ public class MainActivity extends AppCompatActivity {
 
         statusTextView = findViewById(R.id.statusTextView);
         resultsTextView = findViewById(R.id.resultsTextView);
+        startScanButton = findViewById(R.id.startScanButton);
+        stopScanButton = findViewById(R.id.stopScanButton);
+        exportButton = findViewById(R.id.exportButton);
+        exportToSheetsButton = findViewById(R.id.exportToSheetsButton);
+
+        // Wire listeners
+        startScanButton.setOnClickListener(v -> {
+            if (isScanning) {
+                return;
+            }
+            if (!locationPermissionGranted || !bluetoothPermissionGranted) {
+                Toast.makeText(this, "Permissions pending — check the permission dialog", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startScan();
+        });
+
+        stopScanButton.setOnClickListener(v -> {
+            isScanning = false;
+            statusTextView.setText("Scan stopped");
+            Toast.makeText(this, "Scan stopped", Toast.LENGTH_SHORT).show();
+        });
+
+        exportButton.setOnClickListener(v ->
+            Toast.makeText(this, "Export: no entities to export yet", Toast.LENGTH_SHORT).show());
+        exportToSheetsButton.setOnClickListener(v ->
+            Toast.makeText(this, "Export to Sheets: no entities to export yet", Toast.LENGTH_SHORT).show());
 
         // Check permissions
         checkPermissions();
