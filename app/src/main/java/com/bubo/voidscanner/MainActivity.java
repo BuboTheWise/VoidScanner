@@ -13,11 +13,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.bubo.voidscanner.entities.Entity;
-import com.bubo.voidscanner.entities.Rarity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "VoidScanner";
@@ -82,13 +79,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         permissionsGranted();
-    }
-
-    private void permissionsGranted() {
-        if (locationPermissionGranted && bluetoothPermissionGranted) {
-            statusTextView.setText("Ready to scan");
-            Log.d(TAG, "All permissions granted");
-        }
     }
 
     @Override
@@ -199,81 +189,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d(TAG, "Discovered " + entities.size() + " entities");
-    }
-
-    private List<Entity> generateEntities(List<String> scanResults) {
-        List<Entity> entities = new ArrayList<>();
-
-        Random random = new Random();
-        int timestamp = (int) (System.currentTimeMillis() / 1000);
-
-        for (String result : scanResults) {
-            if (!result.contains("Found network")) continue;
-
-            // Extract signal strength
-            String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
-            Double signal = Double.parseDouble(extracted.split(" ")[0]);
-
-            // Determine rarity based on signal strength
-            Rarity rarity;
-            if (signal > 85) {
-                rarity = Rarity.MYTHIC;
-            } else if (signal > 70) {
-                rarity = Rarity.ELITE;
-            } else if (signal > 50) {
-                rarity = Rarity.RARE;
-            } else {
-                rarity = Rarity.COMMON;
-            }
-
-            // Generate entity name based on rarity
-            String name = generateEntityName(rarity, random);
-            String flavorText = generateFlavorText(rarity);
-            String properties = generateProperties(rarity);
-
-            Entity entity = new Entity(name, rarity, flavorText, properties);
-            entities.add(entity);
-        }
-
-        return entities;
-    }
-
-    private String generateEntityName(Rarity rarity, Random random) {
-        String[] names = {
-            "Phantom", "Wraith", "Specter", "Spirit", "Ghost",
-            "Wraith", "Hollow", "Shadow", "Invisibility"
-        };
-
-        // Higher rarity entities get cooler names
-        if (rarity == Rarity.MYTHIC) {
-            return names[random.nextInt(names.length / 2)] + " Lord";
-        } else if (rarity == Rarity.ELITE) {
-            return names[random.nextInt(names.length / 2)] + " Knight";
-        } else if (rarity == Rarity.RARE) {
-            return names[random.nextInt(names.length)];
-        } else {
-            return names[random.nextInt(names.length)];
-        }
-    }
-
-    private String generateFlavorText(Rarity rarity) {
-        String[] texts = {
-            "A whisper of shadow passes through.",
-            "Life echoes faintly in the void.",
-            "Something stirs in the distance.",
-            "A faint resonance lingers here."
-        };
-        return texts[0];
-    }
-
-    private String generateProperties(Rarity rarity) {
-        switch (rarity) {
-            case MYTHIC:
-                return "✨ Mythic | 🔮 Legendary | ☠ High Damage";
-            case ELITE:
-                return "⭐ Elite | ⚡ Enhanced | ⚔ Very High Damage";
-            default:
-                return "⚔ Common | 🛡 Standard Defense";
-        }
     }
 }

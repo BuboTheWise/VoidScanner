@@ -50,12 +50,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Export Activity -->
-        <activity
-            android:name=".ExportActivity"
-            android:exported="false"
-            android:theme="@style/Theme.VoidScanner" />
 
-    </application>
+        </application>
 
 </manifest>
