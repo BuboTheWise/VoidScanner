@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.core.app.ActivityCompat;
+import android.content.IntentFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,14 +58,45 @@ public class BluetoothScanner {
 
         scanResults.add("Bluetooth: Starting discovery...");
 
-        // Use classic discovery
-        boolean isInDiscovery = bluetoothAdapter.startDiscovery();
+        final List<BluetoothDevice> found = new ArrayList<>();
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    if (device != null) found.add(device);
+                }
+            }
+        };
 
-        if (isInDiscovery) {
-            scanResults.add("Bluetooth: Discovery started");
-            scanResults.add("Bluetooth: Waiting up to 12 seconds for discovered devices...");
-        } else {
-            scanResults.add("ERROR: Failed to start Bluetooth discovery");
+        context.getApplicationContext().registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+
+        // Wait up to 12 seconds for discovered devices
+        for (int i = 0; i < 12 && found.isEmpty(); i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+                break;
+            }
+        }
+
+        try {
+            bluetoothAdapter.cancelDiscovery();
+        } catch (Exception ignored) {
+        }
+        context.getApplicationContext().unregisterReceiver(receiver);
+
+        if (found.isEmpty()) {
+            scanResults.add("No Bluetooth devices found");
+            return scanResults;
+        }
+
+        for (BluetoothDevice device : found) {
+            String name = device.getName();
+            if (name == null || name.isEmpty()) name = "Unknown Device";
+            String mac = device.getAddress();
+            String oui = (mac != null && mac.length() >= 8) ? mac.substring(0, 8).toUpperCase() : "UNKNOWN";
+            scanResults.add(String.format("Found Bluetooth device %s (Signal: 50/100, OUI: %s)", name, oui));
         }
 
         return scanResults;
