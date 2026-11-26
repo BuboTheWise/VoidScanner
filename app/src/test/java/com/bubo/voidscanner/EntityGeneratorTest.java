@@ -72,4 +72,14 @@ public class EntityGeneratorTest {
         EntityGenerator.ScanFeatures features = EntityGenerator.extractScanFeatures(lines);
         assertTrue("known Philips Hue OUI should count as IoT presence", features.iotPresence >= 1);
     }
+
+    @Test
+    public void testExtractScanFeaturesBluetoothEmptyCaseDoesNotCrash() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Bluetooth: Starting discovery...");
+        lines.add("No Bluetooth devices found");
+        EntityGenerator.ScanFeatures features = EntityGenerator.extractScanFeatures(lines);
+        assertEquals("status lines must not count as devices", 0, features.humanDensity);
+    }
+
 }

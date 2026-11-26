@@ -64,3 +64,71 @@ public class BluetoothScanner {
         scanResults.add("Bluetooth: Starting discovery...");
 
         final List<BluetoothDevice> found = new ArrayList<>();
+
+        // Listen for ACTION_FOUND broadcasts while discovery is running
+        final BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(ACTION_FOUND)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BLUETOOTH_DEVICE);
+                    String name = device.getName();
+                    String rssiString = intent.getStringExtra(SIGNAL_RSSI);
+                    String ouiString = intent.getStringExtra(OUI_STRING);
+
+                    int signal = 0;
+                    if (rssiString != null) {
+                        try {
+                            signal = Integer.parseInt(rssiString.trim().split("/")[0].trim());
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Invalid signal: " + rssiString);
+                        }
+                    }
+
+                    String oui = "";
+                    if (ouiString != null) {
+                        // Extract OUI from format like "XX:XX:XX)" or clean it up
+                        String cleanedOui = ouiString.replace(")", "").trim();
+                        try {
+                            oui = cleanedOui.split(":")[0].substring(1);  // Remove leading dash if present
+                        } catch (Exception e) {
+                            Log.e(TAG, "Invalid OUI format: " + ouiString);
+                        }
+                    }
+
+                    String scanLine = String.format("Found Bluetooth device %s (Signal: %d/100, OUI: %s)", name, signal, oui);
+                    scanResults.add(scanLine);
+                } else if (intent.getAction().equals(ACTION_DISCOVERY_FINISHED)) {
+                    Log.d(TAG, "Discovery finished");
+                } else if (intent.getAction().equals(ACTION_SCAN_FAILED)) {
+                    Log.e(TAG, "Scan failed with code: " + intent.getIntExtra(RESULT_CODE, 0));
+                    scanResults.add("ERROR: Bluetooth scan failed with code: " + intent.getIntExtra(RESULT_CODE, 0));
+                } else if (intent.getAction().equals(ACTION_DISCOVERY_TIMEOUT)) {
+                    Log.d(TAG, "Discovery timeout");
+                }
+            }
+        };
+
+        try {
+            context.registerReceiver(receiver, new IntentFilter(ACTION_FOUND));
+            context.registerReceiver(receiver, new IntentFilter(ACTION_DISCOVERY_FINISHED));
+            context.registerReceiver(receiver, new IntentFilter(ACTION_SCAN_FAILED));
+            context.registerReceiver(receiver, new IntentFilter(ACTION_DISCOVERY_TIMEOUT));
+
+            return scanResults;
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Invalid receiver");
+        } catch (Exception e) {
+            Log.e(TAG, "Error generating entities", e);
+        }
+
+        return scanResults;
+    }
+
+    public ArrayList<String> getScanResults() {
+        return scanResults;
+    }
+
+    public boolean isBluetoothEnabled() {
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+    }
+}
