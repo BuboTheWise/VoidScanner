@@ -55,26 +55,12 @@ public class BluetoothScanner {
             return scanResults;
         }
 
-        scanResults.add("Bluetooth: Starting discovery...");
-
         // Use classic discovery
         boolean isInDiscovery = bluetoothAdapter.startDiscovery();
-
-        if (isInDiscovery) {
-            scanResults.add("Bluetooth: Discovery started");
-            scanResults.add("Bluetooth: Waiting up to 12 seconds for discovered devices...");
-        } else {
+        if (!isInDiscovery) {
             scanResults.add("ERROR: Failed to start Bluetooth discovery");
+            return scanResults;
         }
+        scanResults.add("Bluetooth: Starting discovery...");
 
-        return scanResults;
-    }
-
-    public ArrayList<String> getScanResults() {
-        return scanResults;
-    }
-
-    public boolean isBluetoothEnabled() {
-        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
-    }
-}
+        final List<BluetoothDevice> found = new ArrayList<>();

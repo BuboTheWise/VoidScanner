@@ -347,7 +347,7 @@ public class EntityGenerator {
         int bluetoothCount = 0;
         int strongBluetooth = 0;
         for (String result : scanResults) {
-            if (result.contains("Bluetooth device")) {
+            if (result.contains("Found Bluetooth device")) {
                 bluetoothCount++;
                 // Extract signal strength for strong Bluetooth detection
                 String extracted = result.substring(result.lastIndexOf("Signal:") + 8);
